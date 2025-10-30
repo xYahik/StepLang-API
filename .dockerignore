@@ -1,0 +1,14 @@
+
+*.iml
+.idea/
+.vscode/
+*.log
+*.tmp
+*.swp
+.mvn/
+target/
+
+#!target/
+!target/*.jar
+!pom.xml
+!src

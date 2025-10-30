@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: steplang
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+      show-sql: true
+      properties:
+        hibernate:
+          format_sql: true
+  server:
+    port: 8080
+  security:
+    user:
+      name: admin
+      password: admin
+
+app:
+  config:
+    access-token-seconds-time: 900 #15 minutes
+    refresh-token-seconds-time: 604800 #7 days
