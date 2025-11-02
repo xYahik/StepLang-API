@@ -1,30 +1,29 @@
 package com.example.steplang.entities.language;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
 @Setter
+@AllArgsConstructor
 @NoArgsConstructor
-public class Language {
+public class WordCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
 
-    @OneToMany(mappedBy = "language", cascade = CascadeType.ALL)
-    List<Word> words = new ArrayList<Word>();
+    @ManyToMany(mappedBy = "categories")
+    private List<Word> words;
 
-    public Language(String name){
+    public WordCategory(String name){
         this.name = name;
     }
 }

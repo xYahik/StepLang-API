@@ -1,4 +1,4 @@
-package com.example.steplang;
+package com.example.steplang.repositories;
 
 import com.example.steplang.entities.User;
 import org.junit.jupiter.api.MethodOrderer;
@@ -6,15 +6,15 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.example.steplang.repositories.UserRepository;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.annotation.DirtiesContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class UserRepositoryTest extends BaseTest{
+
+public class UserRepositoryTest extends BaseRepositoryTest {
 
     @Autowired
     private UserRepository userRepo;

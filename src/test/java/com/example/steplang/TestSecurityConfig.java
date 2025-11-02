@@ -17,7 +17,6 @@ public class TestSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http.authorizeHttpRequests(auth -> auth
-                        //.anyRequest().permitAll()  // zezwalaj na wszystkie żądania
                         .requestMatchers("/api/auth/**").permitAll()
                         .anyRequest().authenticated()
                 )

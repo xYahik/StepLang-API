@@ -1,18 +1,9 @@
 package com.example.steplang.controllers;
 
-import com.example.steplang.BaseTest;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.*;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -21,10 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class AuthControllerTest extends BaseTest {
-
-    @Autowired
-    private  MockMvc mockMvc;
+public class AuthControllerTest extends BaseControllerTest {
 
     @Test
     @Order(1)
@@ -43,7 +31,7 @@ public class AuthControllerTest extends BaseTest {
     }
 
     @Test
-    public void loginUser_shouldReturnToken() throws Exception {
+    public void loginUser_ReturnToken() throws Exception {
         String body = """
                 {
                     "email":"testregister@gmail.com",
