@@ -2,7 +2,6 @@ package com.example.steplang.exceptions;
 
 import com.example.steplang.dtos.ResponseErrorDTO;
 import com.example.steplang.errors.LanguageError;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -15,10 +14,10 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(RuntimeException.class)
+    /*@ExceptionHandler(RuntimeException.class)
     public ResponseEntity<?> handleRuntimeException(RuntimeException e){
         return ResponseEntity.badRequest().body(Map.of("error",e.getMessage()));
-    }
+    }*/
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<?> handleRuntimeException(HttpRequestMethodNotSupportedException e){
         return ResponseEntity.badRequest().body(Map.of("HttpRequestMethodNotSupportedException",e.getMessage()));
@@ -55,5 +54,4 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest().body(Map.of("error",errorDTO));
     }
-
 }
