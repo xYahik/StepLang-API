@@ -3,11 +3,13 @@ package com.example.steplang.entities.language;
 import com.example.steplang.entities.User;
 import com.example.steplang.entities.language.Language;
 import jakarta.persistence.*;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@NoArgsConstructor
 public class UserLanguage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

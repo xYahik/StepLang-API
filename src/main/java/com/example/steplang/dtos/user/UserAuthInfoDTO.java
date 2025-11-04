@@ -5,10 +5,8 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class UserMeDTO {
+public class UserAuthInfoDTO {
     private Long id;
     private String username;
     private String email;
-    private int level;
-    private int exp;
 }

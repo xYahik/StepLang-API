@@ -73,8 +73,8 @@ public class LanguageController {
     }
 
     @PostMapping("{id}/{wordId}/category/add")
-    public ResponseEntity<?> addCategoryToWord(@RequestBody AddCategoryToWordCommand command){
-        String message = languageService.addCategoryToWord(command);
+    public ResponseEntity<?> addCategoryToWord(@PathVariable Long id, @PathVariable Long wordId, @RequestBody AddCategoryToWordCommand command){
+        String message = languageService.addCategoryToWord(id,wordId,command);
         return ResponseEntity.ok(Map.of("message",message));
     }
 

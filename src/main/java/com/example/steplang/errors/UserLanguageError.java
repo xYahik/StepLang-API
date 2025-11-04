@@ -1,0 +1,11 @@
+package com.example.steplang.errors;
+
+public enum UserLanguageError {
+    USER_ALREADY_LEARNING_LANGUAGE,
+    USER_NOT_FOUND,
+    LANGUAGE_NOT_FOUND,
+    USER_NOT_LEARNING_LANGUAGE,
+    LANGUAGE_AND_WORD_ID_NOT_FOUND,
+    USER_NOT_LEARNING_WORD,
+    USER_ALREADY_LEARNING_WORD
+}

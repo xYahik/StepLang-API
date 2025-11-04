@@ -4,8 +4,13 @@ import com.example.steplang.utils.enums.UnderstandingLevel;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import lombok.*;
 
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class UserWordProgress {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,5 +27,12 @@ public class UserWordProgress {
 
     @Min(0)
     @Max(100)
-    private int understandingProgress; //0-100
+    private Long understandingProgress; //0-100
+
+    public UserWordProgress(Word word, UserLanguage userLanguage, UnderstandingLevel understandingLevel, Long understandingProgress){
+        this.word = word;
+        this.userLanguage = userLanguage;
+        this.understandingLevel = understandingLevel;
+        this.understandingProgress = understandingProgress;
+    }
 }

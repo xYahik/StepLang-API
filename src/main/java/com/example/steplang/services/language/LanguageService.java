@@ -85,8 +85,8 @@ public class LanguageService {
     }
 
     @Transactional
-    public String addCategoryToWord(AddCategoryToWordCommand command) {
-        Word word = getWordByLanguageIdAndWordId(command.getLanguageId(),command.getWordId());
+    public String addCategoryToWord(Long languageId, Long wordId, AddCategoryToWordCommand command) {
+        Word word = getWordByLanguageIdAndWordId(languageId,wordId);
         WordCategory category = wordCategoryRepo.findById(command.getCategoryId()).orElse(null);
         if(category == null){
             throw new ApiException(LanguageError.CATEGORY_ID_NOT_FOUND,String.format("Category with id = '%d' doesn't exist",command.getCategoryId()));
@@ -94,7 +94,7 @@ public class LanguageService {
 
         word.AddCategory(category);
 
-        return String.format("Category '%s' added to word '%s'",word.getWord(),category.getName());
+        return String.format("Category '%s' added to word '%s'",category.getName(),word.getWord());
     }
 
     public void addNewCategory(CreateNewCategoryCommand command) {
