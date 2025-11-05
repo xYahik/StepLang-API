@@ -62,7 +62,7 @@ public class WordRepetitionTaskService {
                 repetitionAnswers.add(new WordRepetitionAnswer(badAnswer,false));
             }
             Collections.shuffle(repetitionAnswers);
-            WordRepetitionItem wordRepetitionItem = new WordRepetitionItem(userWordProgress.getWord().getWord(),userWordProgress.getId(),repetitionAnswers);
+            WordRepetitionItem wordRepetitionItem = new WordRepetitionItem(userWordProgress.getWord().getWord(),userWordProgress.getId(),false,repetitionAnswers);
             wordRepetitionItemList.add(wordRepetitionItem);
         });
         wordRepetitionData.setItemList(wordRepetitionItemList);
@@ -80,11 +80,13 @@ public class WordRepetitionTaskService {
             throw new ApiException(TaskError.TASK_INCORRECT_USER,"Current user is incorrect for this task");
 
         WordRepetitionData wordRepetitionData = (WordRepetitionData)languageTask.getTaskData();
-        System.out.println(wordRepetitionData.getItemList().size());
         if(command.getTaskItemId() >= wordRepetitionData.getItemList().size()  || command.getTaskItemId() < 0 )
             throw new ApiException(TaskError.TASK_INCORRECT_ITEM_ID,"taskItemId could not be found");
 
         WordRepetitionItem taskItem = wordRepetitionData.getItemList().get(Math.toIntExact(command.getTaskItemId()));
+        if(taskItem.getAlreadyAnswered())
+            throw new ApiException(TaskError.TASK_ALREADY_ANSWERED, "TaskItem already got answered");
+
         if(command.getAnswerId() >= taskItem.getPossibleAnswers().size() || command.getAnswerId()<0)
             throw new ApiException(TaskError.TASK_INCORRECT_ANSWER_ID, "answerId could not be found");
 
@@ -96,11 +98,13 @@ public class WordRepetitionTaskService {
             //CorrectAnswer
             changeWordProgress(userWordProgress,true);
             userWordProgress.setNextRepetitionDate(calculateNextRepetition(userWordProgress));
-            userWordProgressRepo.save(userWordProgress);
         }else{
             //IncorrectAnswer
             changeWordProgress(userWordProgress,false);
         }
+        taskItem.setAlreadyAnswered(true);
+        languageTaskRepo.save(languageTask);
+        userWordProgressRepo.save(userWordProgress);
 
         WordRepetitionAnswerResponseDTO responseDTO = new WordRepetitionAnswerResponseDTO();
         responseDTO.setUserAnswerId(command.getAnswerId());

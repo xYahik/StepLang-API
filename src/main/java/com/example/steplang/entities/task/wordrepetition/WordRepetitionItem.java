@@ -10,5 +10,6 @@ import java.util.List;
 public class WordRepetitionItem {
     private String baseWord;
     private Long wordId;
+    private Boolean alreadyAnswered;
     private List<WordRepetitionAnswer> possibleAnswers;
 }
