@@ -57,10 +57,6 @@ public class UserController {
         UserProfileDTO dto = userMapper.toProfileDto(user);
         return ResponseEntity.ok(dto);
     }
-
-    //api/user/language/add (post dodanie jezyka uzytkownikowi)
-    //api/user/language/{languageId}/word/add (post dodanie slowka uzytkownikowi)
-    //api/user/language/{languageId}/{wordId} (get  slowka i progressu?)
     @PostMapping("/language/add")
     public ResponseEntity<?> addLanguageToUser(Authentication authentication, @Valid @RequestBody AddLanguageToUserCommand command){
         Long userId = null;
