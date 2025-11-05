@@ -90,4 +90,6 @@ public class UserController {
         UserLanguageWordDTO dto = userMapper.toUserLanguageWordDto(userWordProgress);
         return ResponseEntity.ok(dto);
     }
+
+
 }

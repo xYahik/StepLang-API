@@ -6,6 +6,8 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.*;
 
+import java.time.Instant;
+
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,10 +31,13 @@ public class UserWordProgress {
     @Max(100)
     private Long understandingProgress; //0-100
 
+    private Instant nextRepetitionDate;
+
     public UserWordProgress(Word word, UserLanguage userLanguage, UnderstandingLevel understandingLevel, Long understandingProgress){
         this.word = word;
         this.userLanguage = userLanguage;
         this.understandingLevel = understandingLevel;
         this.understandingProgress = understandingProgress;
+        this.nextRepetitionDate = Instant.now();
     }
 }

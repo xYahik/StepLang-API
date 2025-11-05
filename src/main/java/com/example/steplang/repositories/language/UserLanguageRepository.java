@@ -15,7 +15,8 @@ public interface UserLanguageRepository extends JpaRepository<UserLanguage,Long>
     @Query("select (count(ul) > 0) from UserLanguage ul where ul.user.id = ?1 and ul.language.id = ?2")
     boolean existsByUserIdAndLanguageId(Long userId, Long languageId);
 
-    @Query("select ul from UserLanguage ul where ul.language.id = ?1")
-    Optional<UserLanguage> findByLanguageId(Long id);
+    @Query("select ul from UserLanguage ul where ul.language.id = ?1 and ul.user.id = ?2")
+    Optional<UserLanguage> findByLanguageIdAndUserId(Long languageId, Long userId);
+
 
 }

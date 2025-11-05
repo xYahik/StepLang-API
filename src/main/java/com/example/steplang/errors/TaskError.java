@@ -1,0 +1,10 @@
+package com.example.steplang.errors;
+
+public enum TaskError {
+    COULD_NOT_CREATE_TASK,
+    TASK_NOT_EXIST,
+    TASK_INCORRECT_USER,
+    TASK_INCORRECT_ITEM_ID,
+    TASK_INCORRECT_ANSWER_ID,
+    TASK_WORD_REPETITION_GET_DOWNLOAD_WORDS,
+}

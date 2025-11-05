@@ -69,7 +69,7 @@ public class UserService {
         if(user == null)
             throw new ApiException(UserLanguageError.USER_NOT_FOUND,String.format("User with id = '%d' not found",userId));
 
-        UserLanguage userLanguage = userLanguageRepo.findByLanguageId(languageId).orElse(null);
+        UserLanguage userLanguage = userLanguageRepo.findByLanguageIdAndUserId(languageId,userId).orElse(null);
         if(userLanguage == null)
             throw new ApiException(UserLanguageError.USER_NOT_LEARNING_LANGUAGE,String.format("User with id = '%d' is not learning language with id ='%d'",userId,languageId));
 
@@ -93,7 +93,7 @@ public class UserService {
         if(user == null)
             throw new ApiException(UserLanguageError.USER_NOT_FOUND,String.format("User with id = '%d' not found",userId));
 
-        UserLanguage userLanguage = userLanguageRepo.findByLanguageId(languageId).orElse(null);
+        UserLanguage userLanguage = userLanguageRepo.findByLanguageIdAndUserId(languageId,userId).orElse(null);
         if(userLanguage == null)
             throw new ApiException(UserLanguageError.USER_NOT_LEARNING_LANGUAGE,String.format("User withId = '%d' is not learning language with languageId ='%d'",userId,languageId));
 

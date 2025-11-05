@@ -1,6 +1,7 @@
 package com.example.steplang.exceptions;
 
 import com.example.steplang.errors.LanguageError;
+import com.example.steplang.errors.TaskError;
 import com.example.steplang.errors.UserLanguageError;
 import lombok.Getter;
 
@@ -27,6 +28,15 @@ public class ApiException extends RuntimeException {
     }
     public ApiException(UserLanguageError userLangError, String message, Object details){
         this.errorCode = userLangError.toString();
+        this.messageText = message;
+        this.details = details;
+    }
+    public ApiException(TaskError taskError, String message){
+        this.errorCode = taskError.toString();
+        this.messageText = message;
+    }
+    public ApiException(TaskError taskError, String message, Object details){
+        this.errorCode = taskError.toString();
         this.messageText = message;
         this.details = details;
     }
