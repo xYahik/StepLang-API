@@ -42,26 +42,6 @@ public class LanguageControllerTest extends BaseControllerTest {
     @Autowired
     private WordCategoryRepository wordCategoryRepo;
 
-
-    //Force reset on sql if context reset doesnt work
-   /* @Autowired
-    private PlatformTransactionManager transactionManager;
-    @Autowired
-    private EntityManager entityManager;
-    @AfterEach
-    void cleanUp() {
-        wordRepo.deleteAll();
-        languageRepo.deleteAll();
-        wordCategoryRepo.deleteAll();
-
-        //ClearingAutoIncrement
-        TransactionStatus status = transactionManager.getTransaction(new DefaultTransactionDefinition());
-        entityManager.createNativeQuery("ALTER TABLE word ALTER COLUMN id RESTART WITH 1").executeUpdate();
-        entityManager.createNativeQuery("ALTER TABLE language ALTER COLUMN id RESTART WITH 1").executeUpdate();
-        entityManager.createNativeQuery("ALTER TABLE word_category ALTER COLUMN id RESTART WITH 1").executeUpdate();
-        transactionManager.commit(status);
-    }*/
-
     @Test
     public void addNewLanguage() throws Exception{
         String body = """

@@ -18,14 +18,14 @@ public class UserControllerTest extends BaseControllerTest {
     public void GetMeInformationTest() throws Exception {
         mockMvc.perform(get("/api/user/me")
                 .header("Authorization","Bearer "+ TestUserCreation.getAccessToken()))
-                //.andExpect(status().isOk())
+                .andExpect(status().isOk())
                 .andExpect(content().string("{\"id\":1,\"username\":\"John\",\"email\":\"John@gmail.com\",\"level\":1,\"exp\":0}"));
     }
     @Test
     public void GetUserProfileInformationTest() throws Exception {
         mockMvc.perform(get("/api/user/1")
                         .header("Authorization","Bearer "+ TestUserCreation.getAccessToken()))
-                //.andExpect(status().isOk());
+                .andExpect(status().isOk())
                 .andExpect(content().string("{\"id\":1,\"username\":\"John\",\"level\":1,\"exp\":0}"));
     }
 }
