@@ -18,8 +18,6 @@ import com.example.steplang.services.UserService;
 import com.example.steplang.utils.JwtUtil;
 import com.example.steplang.utils.enums.UnderstandingLevel;
 import jakarta.transaction.Transactional;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -49,7 +47,8 @@ public class WordRepetitionTaskService {
         wordsList.forEach(userWordProgress->{
             List<WordRepetitionAnswer> repetitionAnswers = new ArrayList<>();
             repetitionAnswers.add(new WordRepetitionAnswer(userWordProgress.getWord().getTranslation(),true));
-            while(repetitionAnswers.size() < 4){
+            int extraBadAnswers = Math.min(wordsList.size(), 4);
+            while(repetitionAnswers.size() < extraBadAnswers){
                 String badAnswer = null;
                 while(badAnswer == null) {
                     Collections.shuffle(shuffled);
@@ -121,7 +120,9 @@ public class WordRepetitionTaskService {
         if(userLanguage == null)
             throw new ApiException(UserLanguageError.USER_NOT_LEARNING_LANGUAGE,"User not learning specified language");
 
+
         List<UserWordProgress> words = userWordProgressRepo.find10MostNeededRepetition(userLanguage.getId());
+        System.out.println(words.size());
         return words;
     }
 
@@ -158,7 +159,7 @@ public class WordRepetitionTaskService {
     }
 
     private Long recalculateProgressValueToNumeric(UnderstandingLevel understandingLevel, Long understandingProgress){
-        Long understandingLevelValue;
+        long understandingLevelValue;
         switch(understandingLevel){
             case UnderstandingLevel.NEW -> understandingLevelValue = 0L;
             case UnderstandingLevel.LEARNING -> understandingLevelValue = 1L;
