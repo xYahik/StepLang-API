@@ -9,4 +9,5 @@ import java.util.List;
 public class WordRepetitionData extends TaskDataBase {
     private List<WordRepetitionItem> itemList;
     private Long currentProgression;
+    private Long correctlyAnswered;
 }

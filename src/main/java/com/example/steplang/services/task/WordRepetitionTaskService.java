@@ -1,5 +1,6 @@
 package com.example.steplang.services.task;
 
+import com.example.steplang.commands.task.GetWordRepetitionTaskCommand;
 import com.example.steplang.commands.task.UserAnswerToWordRepetitionTaskCommand;
 import com.example.steplang.dtos.task.WordRepetitionAnswerResponseDTO;
 import com.example.steplang.entities.language.UserLanguage;
@@ -11,6 +12,8 @@ import com.example.steplang.entities.task.wordrepetition.WordRepetitionItem;
 import com.example.steplang.errors.TaskError;
 import com.example.steplang.errors.UserLanguageError;
 import com.example.steplang.exceptions.ApiException;
+import com.example.steplang.model.task.TaskReward;
+import com.example.steplang.model.task.WordRepetitionStatusInfo;
 import com.example.steplang.repositories.language.UserLanguageRepository;
 import com.example.steplang.repositories.language.UserWordProgressRepository;
 import com.example.steplang.repositories.task.LanguageTaskRepository;
@@ -40,6 +43,7 @@ public class WordRepetitionTaskService {
 
     public WordRepetitionData createWordRepetitionTask(Long userId, Long languageId){
         WordRepetitionData wordRepetitionData = new WordRepetitionData();
+        wordRepetitionData.setCorrectlyAnswered(0L);
         List<WordRepetitionItem> wordRepetitionItemList = new ArrayList<>();
 
         List<UserWordProgress> wordsList = generateWordsList(userId,languageId);
@@ -79,6 +83,7 @@ public class WordRepetitionTaskService {
             throw new ApiException(TaskError.TASK_INCORRECT_USER,"Current user is incorrect for this task");
 
         WordRepetitionData wordRepetitionData = (WordRepetitionData)languageTask.getTaskData();
+
         if(command.getTaskItemId() >= wordRepetitionData.getItemList().size()  || command.getTaskItemId() < 0 )
             throw new ApiException(TaskError.TASK_INCORRECT_ITEM_ID,"taskItemId could not be found");
 
@@ -97,10 +102,13 @@ public class WordRepetitionTaskService {
             //CorrectAnswer
             changeWordProgress(userWordProgress,true);
             userWordProgress.setNextRepetitionDate(calculateNextRepetition(userWordProgress));
+            wordRepetitionData.setCorrectlyAnswered(wordRepetitionData.getCorrectlyAnswered()+1);
         }else{
             //IncorrectAnswer
             changeWordProgress(userWordProgress,false);
         }
+
+        wordRepetitionData.setCurrentProgression(wordRepetitionData.getCurrentProgression()+1);
         taskItem.setAlreadyAnswered(true);
         languageTaskRepo.save(languageTask);
         userWordProgressRepo.save(userWordProgress);
@@ -122,7 +130,6 @@ public class WordRepetitionTaskService {
 
 
         List<UserWordProgress> words = userWordProgressRepo.find10MostNeededRepetition(userLanguage.getId());
-        System.out.println(words.size());
         return words;
     }
 
@@ -186,4 +193,40 @@ public class WordRepetitionTaskService {
                     )
         ));
     }
+
+    public WordRepetitionStatusInfo getWordRepetitionTaskStatus(GetWordRepetitionTaskCommand command) {
+        WordRepetitionData wordRepetitionData = getWordRepetitionDataFromTask(command.getTaskId());
+
+        WordRepetitionStatusInfo currentTaskStatus = new WordRepetitionStatusInfo(
+                wordRepetitionData.getCurrentProgression(),
+                (long)wordRepetitionData.getItemList().size(),
+                isTaskCompleted(wordRepetitionData)
+                );
+
+        return currentTaskStatus;
+    }
+
+    public TaskReward calculateWordRepetitionTaskReward(WordRepetitionData wordRepetitionData){
+        return new TaskReward(wordRepetitionData.getCorrectlyAnswered(),true);
+    }
+
+    public boolean isTaskCompleted(WordRepetitionData wordRepetitionData){
+        return wordRepetitionData.getCurrentProgression() == wordRepetitionData.getItemList().size();
+    }
+
+    public TaskReward getWordRepetitionTaskReward(GetWordRepetitionTaskCommand command) {
+        WordRepetitionData wordRepetitionData = getWordRepetitionDataFromTask(command.getTaskId());
+        return calculateWordRepetitionTaskReward(wordRepetitionData);
+    }
+
+    private WordRepetitionData getWordRepetitionDataFromTask(String taskId){
+    LanguageTask languageTask = languageTaskRepo.findById(taskId).orElse(null);
+    if(languageTask == null)
+        throw new ApiException(TaskError.TASK_NOT_EXIST,String.format("Couldn't find task with id = '%s'",taskId));
+    if(languageTask.getUserId() != jwtUtil.getUserAuthInfo().getId())
+        throw new ApiException(TaskError.TASK_INCORRECT_USER,"Current user is incorrect for this task");
+
+    return (WordRepetitionData)languageTask.getTaskData();
+    }
+
 }

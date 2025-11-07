@@ -153,6 +153,14 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<configuration>
+					<targetJdk>21</targetJdk>
+					<minimumTokens>50</minimumTokens>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
