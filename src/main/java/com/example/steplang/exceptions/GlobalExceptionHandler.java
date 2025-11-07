@@ -14,10 +14,10 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    /*@ExceptionHandler(RuntimeException.class)
+    @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<?> handleRuntimeException(RuntimeException e){
         return ResponseEntity.badRequest().body(Map.of("error",e.getMessage()));
-    }*/
+    }
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<?> handleRuntimeException(HttpRequestMethodNotSupportedException e){
         return ResponseEntity.badRequest().body(Map.of("HttpRequestMethodNotSupportedException",e.getMessage()));
