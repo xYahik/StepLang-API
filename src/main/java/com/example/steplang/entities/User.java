@@ -1,5 +1,6 @@
 package com.example.steplang.entities;
 
+import com.example.steplang.entities.language.UserLanguage;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,9 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
     private List<RefreshToken> refreshTokens = new ArrayList<>();
+
+    @OneToMany(mappedBy="user",cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserLanguage> languages = new ArrayList<>();
 
     public User(String username, String email, String password){
         this.username = username;

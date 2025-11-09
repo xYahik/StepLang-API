@@ -1,6 +1,9 @@
 package com.example.steplang.utils;
 
+import com.example.steplang.dtos.user.UserMeDTO;
 import com.example.steplang.entities.User;
+import com.example.steplang.mappers.UserMapper;
+import com.example.steplang.repositories.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,8 +25,15 @@ import java.util.Enumeration;
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
-    public JwtAuthFilter(JwtUtil jwtUtil){
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
+
+    public JwtAuthFilter(JwtUtil jwtUtil,
+                         UserRepository userRepository,
+                         UserMapper userMapper){
         this.jwtUtil = jwtUtil;
+        this.userRepository = userRepository;
+        this.userMapper = userMapper;
     }
     /*@Autowired
     private RequestMappingHandlerMapping handlerMapping;*/
@@ -50,7 +60,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 if(jwtUtil.validateToken(token)){
                     String email = jwtUtil.extractEmail(token);
 
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(new User("",email,""), null, java.util.List.of());
+                    User user = userRepository.findByEmail(email).orElse(null);
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userMapper.toAuthInfoDto(user), null, java.util.List.of());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }

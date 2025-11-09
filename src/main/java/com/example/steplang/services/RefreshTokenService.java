@@ -20,12 +20,6 @@ public class RefreshTokenService {
     private final UserRepository userRepo;
     private final AppConfig appConfig;
 
-    /*Not needed anymore as lambok by @RequiredArgsContructor made constructor and autowired all*/
-    /*@Autowired
-    public RefreshTokenService(RefreshTokenRepository refreshTokenRepo, UserRepository userRepo){
-        this.refreshTokenRepo = refreshTokenRepo;
-        this.userRepo = userRepo;
-    }*/
     @Transactional
     public RefreshToken createRefreshToken(User user){
         RefreshToken token = new RefreshToken();

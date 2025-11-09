@@ -12,8 +12,4 @@ public class AddCategoryToWordCommand {
 
     @NotBlank(message = "'categoryId' is required")
     private Long categoryId;
-    @NotBlank(message = "'languageId' is required")
-    private Long languageId;
-    @NotBlank(message = "'wordId' is required")
-    private Long wordId;
 }

@@ -28,13 +28,6 @@ public class AuthController {
     private final RefreshTokenService refreshTokenService;
     private final AppConfig appConfig;
 
-    /*public AuthController(UserService userService, UserRepository userRepo, JwtUtil jwtUtil, RefreshTokenService refreshTokenService){
-        this.userService = userService;
-        this.userRepo = userRepo;
-        this.jwtUtil = jwtUtil;
-        this.refreshTokenService = refreshTokenService;
-    }*/
-
     @PostMapping("/register")
     public ResponseEntity<?> registerNewUser(@RequestBody Map<String,String> req){
         String username = req.get("username");

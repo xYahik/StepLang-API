@@ -6,22 +6,12 @@ import com.example.steplang.repositories.language.LanguageRepository;
 import com.example.steplang.repositories.language.WordCategoryRepository;
 import com.example.steplang.repositories.language.WordRepository;
 import com.jayway.jsonpath.JsonPath;
-import jakarta.persistence.EntityManager;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +23,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-//@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class LanguageControllerTest extends BaseControllerTest {
     @Autowired
     private WordRepository wordRepo;
@@ -41,26 +30,6 @@ public class LanguageControllerTest extends BaseControllerTest {
     private LanguageRepository languageRepo;
     @Autowired
     private WordCategoryRepository wordCategoryRepo;
-
-
-    //Force reset on sql if context reset doesnt work
-   /* @Autowired
-    private PlatformTransactionManager transactionManager;
-    @Autowired
-    private EntityManager entityManager;
-    @AfterEach
-    void cleanUp() {
-        wordRepo.deleteAll();
-        languageRepo.deleteAll();
-        wordCategoryRepo.deleteAll();
-
-        //ClearingAutoIncrement
-        TransactionStatus status = transactionManager.getTransaction(new DefaultTransactionDefinition());
-        entityManager.createNativeQuery("ALTER TABLE word ALTER COLUMN id RESTART WITH 1").executeUpdate();
-        entityManager.createNativeQuery("ALTER TABLE language ALTER COLUMN id RESTART WITH 1").executeUpdate();
-        entityManager.createNativeQuery("ALTER TABLE word_category ALTER COLUMN id RESTART WITH 1").executeUpdate();
-        transactionManager.commit(status);
-    }*/
 
     @Test
     public void addNewLanguage() throws Exception{
