@@ -32,7 +32,6 @@ public class UserController {
     private final JwtUtil jwtUtil;
     private final UserMapper userMapper;
 
-
     @GetMapping("/me")
     public ResponseEntity<?> getMe(){
         String email = null;
@@ -86,6 +85,5 @@ public class UserController {
         UserLanguageWordDTO dto = userMapper.toUserLanguageWordDto(userWordProgress);
         return ResponseEntity.ok(dto);
     }
-
 
 }

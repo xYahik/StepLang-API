@@ -3,7 +3,7 @@ package com.example.steplang.controllers.task;
 import com.example.steplang.commands.task.CreateWordRepetitionTaskCommand;
 import com.example.steplang.commands.task.GetWordRepetitionTaskCommand;
 import com.example.steplang.commands.task.UserAnswerToWordRepetitionTaskCommand;
-import com.example.steplang.entities.task.LanguageTask;
+import com.example.steplang.model.task.LanguageTask;
 import com.example.steplang.mappers.task.TaskMapper;
 import com.example.steplang.model.task.WordRepetitionStatusInfo;
 import com.example.steplang.services.task.LanguageTaskService;

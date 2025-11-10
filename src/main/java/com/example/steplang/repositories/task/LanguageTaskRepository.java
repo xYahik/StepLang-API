@@ -1,6 +1,6 @@
 package com.example.steplang.repositories.task;
 
-import com.example.steplang.entities.task.LanguageTask;
+import com.example.steplang.model.task.LanguageTask;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;

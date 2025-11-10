@@ -1,6 +1,6 @@
-package com.example.steplang.entities.task.wordrepetition;
+package com.example.steplang.model.task.wordrepetition;
 
-import com.example.steplang.entities.task.TaskDataBase;
+import com.example.steplang.model.task.TaskDataBase;
 import lombok.Data;
 
 import java.util.List;
