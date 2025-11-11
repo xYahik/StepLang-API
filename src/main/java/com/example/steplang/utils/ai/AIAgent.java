@@ -15,6 +15,11 @@ public class AIAgent {
     private ChatModel chatModel;
     public String generateAITask(String prompt) {
         String aiResponse = chatModel.call(prompt);
+
+        //Sometimes chatModel generate json with code block which we want to remove
+        aiResponse = aiResponse.replace("```json","");
+        aiResponse = aiResponse.replace("```","");
+
         return aiResponse;
     }
 }
