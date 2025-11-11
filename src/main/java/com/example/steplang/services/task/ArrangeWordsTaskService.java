@@ -44,7 +44,7 @@ public class ArrangeWordsTaskService {
         List<String> wordsList = generateWordsList(userId,languageId);
         String prompt = buildAIPrompt(wordsList);
         String responseJson = aiAgent.generateAITask(prompt);
-        System.out.println(responseJson);
+
         ObjectMapper mapper = new ObjectMapper();
         try{
             arrangeWordsDataItems = mapper.readValue(responseJson, new TypeReference<List<ArrangeWordsDataItem>>() {});
@@ -154,6 +154,7 @@ public class ArrangeWordsTaskService {
         });
 
         ArrangeWordsAnswerResponseDTO arrangeWordsAnswerResponseDTO = new ArrangeWordsAnswerResponseDTO();
+        arrangeWordsAnswerResponseDTO.setCorrectAnswers(taskItem.getCorrect_sentences());
         if(correctAnswers.contains(taskItem.getUserAnswerOrder())) {
             arrangeWordsData.setCorrectlyAnswered(arrangeWordsData.getCorrectlyAnswered()+1);
             arrangeWordsAnswerResponseDTO.setIsCorrectAnswer(true);
