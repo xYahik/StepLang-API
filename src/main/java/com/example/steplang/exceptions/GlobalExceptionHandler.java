@@ -27,7 +27,7 @@ public class GlobalExceptionHandler {
         ResponseErrorDTO errorDTO = new ResponseErrorDTO();
 
         errorDTO.setCode(e.getErrorCode());
-        errorDTO.setStatus(400L);
+        errorDTO.setStatus(e.getStatus() == null ? 400L : e.getStatus());
 
         if(!e.getMessageText().isEmpty())
             errorDTO.setMessage(e.getMessageText());

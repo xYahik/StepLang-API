@@ -7,6 +7,7 @@ import com.example.steplang.entities.language.Language;
 import com.example.steplang.entities.language.UserLanguage;
 import com.example.steplang.entities.language.UserWordProgress;
 import com.example.steplang.entities.language.Word;
+import com.example.steplang.errors.AuthError;
 import com.example.steplang.errors.UserLanguageError;
 import com.example.steplang.exceptions.ApiException;
 import com.example.steplang.repositories.UserRepository;
@@ -38,9 +39,9 @@ public class UserService {
     @Transactional
     public User register(String username, String email, String password){
         if(userRepo.existsByUsername(username))
-            throw new RuntimeException("UserName already used");
+            throw new ApiException(AuthError.USERNAME_ALREADY_EXIST, 409, "Username already used");
         if(userRepo.existsByEmail(email))
-            throw new RuntimeException("Email already used");
+            throw new ApiException(AuthError.EMAIL_ALREADY_EXIST, 409,  "Email already used");
 
         String hashedPassword = encoder.encode(password);
         User newUser = new User(username,email,hashedPassword);

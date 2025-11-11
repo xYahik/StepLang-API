@@ -1,5 +1,6 @@
 package com.example.steplang.exceptions;
 
+import com.example.steplang.errors.AuthError;
 import com.example.steplang.errors.LanguageError;
 import com.example.steplang.errors.TaskError;
 import com.example.steplang.errors.UserLanguageError;
@@ -10,6 +11,7 @@ public class ApiException extends RuntimeException {
     private String errorCode;
     private String messageText;
     private Object details;
+    private Integer status;
     public ApiException(String e) {
         super(e);
     }
@@ -37,6 +39,16 @@ public class ApiException extends RuntimeException {
     }
     public ApiException(TaskError taskError, String message, Object details){
         this.errorCode = taskError.toString();
+        this.messageText = message;
+        this.details = details;
+    }
+    public ApiException(AuthError authError, Integer status, String message){
+        this.errorCode = authError.toString();
+        this.messageText = message;
+        this.status = status;
+    }
+    public ApiException(AuthError authError, String message, Object details){
+        this.errorCode = authError.toString();
         this.messageText = message;
         this.details = details;
     }
