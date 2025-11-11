@@ -19,9 +19,3 @@ public class ArrangeWordsDataItem {
     private Boolean alreadyAnswered;
     private List<Long> userAnswerOrder;
 }
-@Data
-class ArrangeWordsDataHints{
-    private String level;
-    private String grammar_focus;
-    private String note;
-}
