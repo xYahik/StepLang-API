@@ -91,7 +91,7 @@ public class ArrangeWordsTaskService {
                      "instruction": "Arrange the words to form a correct Czech sentence.",
                      "source_words": [...],
                      "extra_words": [...],
-                     "base_sentences": "...",
+                     "base_sentence": "...",
                      "correct_sentences": [...],
                      "all_words_shuffled": [...],
                      "hints": {

@@ -11,7 +11,7 @@ public class ArrangeWordsDataItem {
     private String instruction;
     private List<String> source_words;
     private List<String> extra_words;
-    private String base_sentences;
+    private String base_sentence;
     private List<String> correct_sentences;
     private List<String> all_words_shuffled;
     private ArrangeWordsDataHints hints;
