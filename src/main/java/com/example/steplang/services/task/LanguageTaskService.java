@@ -22,10 +22,8 @@ public class LanguageTaskService {
         String taskId = UUID.randomUUID().toString();
         TaskDataBase taskData = null;
         switch(taskType){
-            case LanguageTaskType.WORD_REPETITION:
-                taskData = wordRepetitionTaskService.createWordRepetitionTask(userId,languageId);
-            case LanguageTaskType.ARRANGE_WORDS:
-                taskData = arrangeWordsTaskService.createArrangeWordsTask(userId,languageId);
+            case LanguageTaskType.WORD_REPETITION -> taskData = wordRepetitionTaskService.createWordRepetitionTask(userId,languageId);
+            case LanguageTaskType.ARRANGE_WORDS -> taskData = arrangeWordsTaskService.createArrangeWordsTask(userId,languageId);
         }
 
         if(taskData == null)
