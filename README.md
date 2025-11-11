@@ -21,6 +21,8 @@ It provides endpoints for user authentication, lesson management, and progress t
 - **Spring Security** – authentication and authorization  
 - **Hibernate (JPA)** – ORM for database access  
 - **PostgreSQL** – relational database  
+- **Redis** – in-memory data store for caching and fast data access
+- **Swagger** – API documentation
 - **Maven** – build and dependency management  
 - **Docker** – containerization and local development
 
