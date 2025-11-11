@@ -18,6 +18,7 @@ public class AuthControllerTest extends BaseControllerTest {
     public void registerUser_ReturnOk() throws Exception {
         String body = """
                 {
+                    "username":"testregister",
                     "email":"testregister@gmail.com",
                     "password":"testregisterpassword"
                 }
@@ -26,7 +27,7 @@ public class AuthControllerTest extends BaseControllerTest {
         mockMvc.perform(post("/api/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
     }
 
     @Test
@@ -58,7 +59,7 @@ public class AuthControllerTest extends BaseControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("{\"error\":\"Invalid credentials\"}"));
+                .andExpect(content().string("{\"error\":{\"code\":\"INVALID_CREDENTIALS\",\"message\":\"Invalid credentials\",\"status\":400}}"));
     }
 
     @Test

@@ -34,7 +34,7 @@ public class GlobalExceptionHandler {
         //if(e.getDetails() != null)
             //errorDTO.setDetails(e.getDetails());
 
-        return ResponseEntity.badRequest().body(Map.of("error",errorDTO));
+        return ResponseEntity.status(Math.toIntExact(errorDTO.getStatus())).body(Map.of("error",errorDTO));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

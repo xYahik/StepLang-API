@@ -3,6 +3,8 @@ package com.example.steplang.services;
 import com.example.steplang.config.AppConfig;
 import com.example.steplang.entities.RefreshToken;
 import com.example.steplang.entities.User;
+import com.example.steplang.errors.AuthError;
+import com.example.steplang.exceptions.ApiException;
 import com.example.steplang.repositories.RefreshTokenRepository;
 import com.example.steplang.repositories.UserRepository;
 import jakarta.transaction.Transactional;
@@ -31,11 +33,11 @@ public class RefreshTokenService {
     @Transactional
     public RefreshToken verifyExpirationToken(String token){
         RefreshToken refreshToken = refreshTokenRepo.findByToken(token)
-                .orElseThrow(() -> new RuntimeException("Invalid refreshToken"));
+                .orElseThrow(() -> new ApiException(AuthError.INVALID_REFRESH_TOKEN, 400, "Invalid refreshToken"));
 
         if(refreshToken.getExpirationDate().isBefore(Instant.now())){
             refreshTokenRepo.delete(refreshToken);
-            throw new RuntimeException("RefreshToken expired. Please login again.");
+            throw new ApiException(AuthError.EXPIRED_REFRESH_TOKEN, 400, "RefreshToken expired. Please login again.");
         }
         return refreshToken;
     }
