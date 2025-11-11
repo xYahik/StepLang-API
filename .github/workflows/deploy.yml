@@ -17,6 +17,14 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
+      - name: Create .env from github secrets
+        run: |
+          cat > .env <<EOF
+          AI_CHAT_API_KEY=${{secrets.AI_CHAT_API_KEY}}
+          AI_CHAT_API_URL=${{secrets.AI_CHAT_API_URL}}
+          AI_CHAT_MODEL=${{secrets.AI_CHAT_MODEL}}
+          EOF
+
       - name: Run Tests
         run: mvn -B test
 
