@@ -10,4 +10,6 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ArrangeWordsData extends TaskDataBase {
     private List<ArrangeWordsDataItem> tasks;
+    private Long currentProgression;
+    private Long correctlyAnswered;
 }

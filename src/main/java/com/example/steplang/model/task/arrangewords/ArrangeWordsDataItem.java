@@ -15,6 +15,9 @@ public class ArrangeWordsDataItem {
     private List<String> correct_sentences;
     private List<String> all_words_shuffled;
     private ArrangeWordsDataHints hints;
+
+    private Boolean alreadyAnswered;
+    private List<Long> userAnswerOrder;
 }
 @Data
 class ArrangeWordsDataHints{
