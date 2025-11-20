@@ -214,8 +214,8 @@ public class WordRepetitionTaskService {
         return wordRepetitionData.getCurrentProgression() == wordRepetitionData.getItemList().size();
     }
 
-    public TaskReward getWordRepetitionTaskReward(GetWordRepetitionTaskCommand command) {
-        WordRepetitionData wordRepetitionData = getWordRepetitionDataFromTask(command.getTaskId());
+    public TaskReward getWordRepetitionTaskReward(String taskId) {
+        WordRepetitionData wordRepetitionData = getWordRepetitionDataFromTask(taskId);
         return calculateWordRepetitionTaskReward(wordRepetitionData);
     }
 

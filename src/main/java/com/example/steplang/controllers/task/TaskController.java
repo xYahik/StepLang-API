@@ -17,6 +17,11 @@ public class TaskController {
     @GetMapping("/{taskId}/status")
     public ResponseEntity<?> getTaskStatus(@PathVariable String taskId){
         TaskStatusInfo taskInfo = languageTaskService.getTaskStatus(taskId);
+        if(taskInfo.getCompleted()){
+            return ResponseEntity.ok(languageTaskService.getTaskReward(taskId));
+        }
         return ResponseEntity.ok(taskInfo);
     }
+
+
 }

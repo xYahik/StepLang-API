@@ -2,6 +2,8 @@ package com.example.steplang.exceptions;
 
 import com.example.steplang.dtos.ResponseErrorDTO;
 import com.example.steplang.errors.LanguageError;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -13,13 +15,16 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<?> handleRuntimeException(RuntimeException e){
+        log.error("RuntimeException caught", e);
         return ResponseEntity.badRequest().body(Map.of("error",e.getMessage()));
     }
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<?> handleRuntimeException(HttpRequestMethodNotSupportedException e){
+        log.error("HttpRequestMethodNotSupportedException caught", e);
         return ResponseEntity.badRequest().body(Map.of("HttpRequestMethodNotSupportedException",e.getMessage()));
     }
     @ExceptionHandler(ApiException.class)
@@ -34,6 +39,7 @@ public class GlobalExceptionHandler {
         //if(e.getDetails() != null)
             //errorDTO.setDetails(e.getDetails());
 
+        log.error("ApiException caught", e);
         return ResponseEntity.badRequest().body(Map.of("error",errorDTO));
     }
 
@@ -52,6 +58,7 @@ public class GlobalExceptionHandler {
         errorDTO.setMessage(ex.getBindingResult().getFieldError().getDefaultMessage());
         //errorDTO.setDetails(errors);
 
+        log.error("MethodArgumentNotValidException caught", ex);
         return ResponseEntity.badRequest().body(Map.of("error",errorDTO));
     }
 }

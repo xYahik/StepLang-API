@@ -1,12 +1,9 @@
 package com.example.steplang.services.task;
 
 import com.example.steplang.errors.LanguageError;
-import com.example.steplang.model.task.LanguageTask;
-import com.example.steplang.model.task.TaskDataBase;
+import com.example.steplang.model.task.*;
 import com.example.steplang.errors.TaskError;
 import com.example.steplang.exceptions.ApiException;
-import com.example.steplang.model.task.TaskStatusInfo;
-import com.example.steplang.model.task.WordRepetitionStatusInfo;
 import com.example.steplang.model.task.arrangewords.ArrangeWordsStatusInfo;
 import com.example.steplang.repositories.task.LanguageTaskRepository;
 import com.example.steplang.utils.enums.LanguageTaskType;
@@ -62,5 +59,22 @@ public class LanguageTaskService {
             }
         }
         return taskStatusInfo;
+    }
+
+    public TaskReward getTaskReward(String taskId){
+        LanguageTask task = languageTaskRepo.findById(taskId).orElse(null);
+        if(task == null)
+            throw new ApiException(TaskError.TASK_NOT_EXIST,String.format("Couldn't find task with id = '%s'",taskId));
+
+        TaskReward taskReward = null;
+        switch(task.getLanguageTaskType()){
+            case LanguageTaskType.WORD_REPETITION -> {
+                taskReward = wordRepetitionTaskService.getWordRepetitionTaskReward(taskId);
+            }
+            case LanguageTaskType.ARRANGE_WORDS -> {
+                taskReward = arrangeWordsTaskService.getArrangeWordsTaskReward(taskId);
+            }
+        }
+        return taskReward;
     }
 }
