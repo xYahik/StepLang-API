@@ -38,4 +38,12 @@ public interface UserWordProgressRepository extends JpaRepository<UserWordProgre
     LIMIT 10
     """, nativeQuery = true)
     List<UserWordProgress> find10MostNeededRepetition(@Param("userLanguageId") Long userLanguageId);
+
+    @Query( value = """
+            SELECT w.word
+            FROM UserWordProgress uwp
+            JOIN uwp.word w
+            WHERE uwp.userLanguage.id = :userLanguageId
+            """)
+    List<String> findAllWordsByUserLanguage(@Param("userLanguageId")Long id);
 }

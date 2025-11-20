@@ -5,10 +5,10 @@ import com.example.steplang.commands.task.UserAnswerToWordRepetitionTaskCommand;
 import com.example.steplang.dtos.task.WordRepetitionAnswerResponseDTO;
 import com.example.steplang.entities.language.UserLanguage;
 import com.example.steplang.entities.language.UserWordProgress;
-import com.example.steplang.entities.task.LanguageTask;
-import com.example.steplang.entities.task.wordrepetition.WordRepetitionAnswer;
-import com.example.steplang.entities.task.wordrepetition.WordRepetitionData;
-import com.example.steplang.entities.task.wordrepetition.WordRepetitionItem;
+import com.example.steplang.model.task.LanguageTask;
+import com.example.steplang.model.task.wordrepetition.WordRepetitionAnswer;
+import com.example.steplang.model.task.wordrepetition.WordRepetitionData;
+import com.example.steplang.model.task.wordrepetition.WordRepetitionItem;
 import com.example.steplang.errors.TaskError;
 import com.example.steplang.errors.UserLanguageError;
 import com.example.steplang.exceptions.ApiException;
@@ -194,8 +194,8 @@ public class WordRepetitionTaskService {
         ));
     }
 
-    public WordRepetitionStatusInfo getWordRepetitionTaskStatus(GetWordRepetitionTaskCommand command) {
-        WordRepetitionData wordRepetitionData = getWordRepetitionDataFromTask(command.getTaskId());
+    public WordRepetitionStatusInfo getWordRepetitionTaskStatus(String taskId) {
+        WordRepetitionData wordRepetitionData = getWordRepetitionDataFromTask(taskId);
 
         WordRepetitionStatusInfo currentTaskStatus = new WordRepetitionStatusInfo(
                 wordRepetitionData.getCurrentProgression(),

@@ -1,4 +1,4 @@
-package com.example.steplang.entities.task.wordrepetition;
+package com.example.steplang.model.task.wordrepetition;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

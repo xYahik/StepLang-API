@@ -1,4 +1,4 @@
-package com.example.steplang.entities.task;
+package com.example.steplang.model.task;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package com.example.steplang.entities.task;
+package com.example.steplang.model.task;
 
 import com.example.steplang.utils.enums.LanguageTaskType;
 import lombok.AllArgsConstructor;
