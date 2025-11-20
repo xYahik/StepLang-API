@@ -18,6 +18,7 @@ import com.example.steplang.repositories.language.UserLanguageRepository;
 import com.example.steplang.repositories.language.UserWordProgressRepository;
 import com.example.steplang.repositories.task.LanguageTaskRepository;
 import com.example.steplang.services.UserService;
+import com.example.steplang.services.user.LevelingService;
 import com.example.steplang.utils.JwtUtil;
 import com.example.steplang.utils.enums.UnderstandingLevel;
 import jakarta.transaction.Transactional;
@@ -40,7 +41,7 @@ public class WordRepetitionTaskService {
     private final UserService userService;
     private final UserLanguageRepository userLanguageRepo;
     private final LanguageTaskRepository languageTaskRepo;
-
+    private final LevelingService levelingService;
     public WordRepetitionData createWordRepetitionTask(Long userId, Long languageId){
         WordRepetitionData wordRepetitionData = new WordRepetitionData();
         wordRepetitionData.setCorrectlyAnswered(0L);
@@ -65,7 +66,7 @@ public class WordRepetitionTaskService {
                 repetitionAnswers.add(new WordRepetitionAnswer(badAnswer,false));
             }
             Collections.shuffle(repetitionAnswers);
-            WordRepetitionItem wordRepetitionItem = new WordRepetitionItem(userWordProgress.getWord().getWord(),userWordProgress.getId(),false,repetitionAnswers);
+            WordRepetitionItem wordRepetitionItem = new WordRepetitionItem(userWordProgress.getWord().getWord(),userWordProgress.getWord().getWordId(),false,repetitionAnswers);
             wordRepetitionItemList.add(wordRepetitionItem);
         });
         wordRepetitionData.setItemList(wordRepetitionItemList);
@@ -88,6 +89,7 @@ public class WordRepetitionTaskService {
             throw new ApiException(TaskError.TASK_INCORRECT_ITEM_ID,"taskItemId could not be found");
 
         WordRepetitionItem taskItem = wordRepetitionData.getItemList().get(Math.toIntExact(command.getTaskItemId()));
+
         if(taskItem.getAlreadyAnswered())
             throw new ApiException(TaskError.TASK_ALREADY_ANSWERED, "TaskItem already got answered");
 
@@ -97,7 +99,7 @@ public class WordRepetitionTaskService {
 
 
         UserWordProgress userWordProgress = userService.getUserLanguageWord(languageTask.getUserId(), languageTask.getLanguageId(),taskItem.getWordId() );
-
+        System.out.println(String.format("Test %d %d", taskItem.getWordId(), userWordProgress.getId()));
         if(taskItem.getPossibleAnswers().get(Math.toIntExact(command.getAnswerId())).isTrueAnswer()){
             //CorrectAnswer
             changeWordProgress(userWordProgress,true);
@@ -112,6 +114,10 @@ public class WordRepetitionTaskService {
         taskItem.setAlreadyAnswered(true);
         languageTaskRepo.save(languageTask);
         userWordProgressRepo.save(userWordProgress);
+
+        if(isTaskCompleted(wordRepetitionData)){
+            levelingService.AddUserLanguageXP(languageTask.getUserId(),languageTask.getLanguageId(),calculateWordRepetitionTaskReward(wordRepetitionData).getEarnedExp());
+        }
 
         WordRepetitionAnswerResponseDTO responseDTO = new WordRepetitionAnswerResponseDTO();
         responseDTO.setUserAnswerId(command.getAnswerId());
@@ -160,7 +166,6 @@ public class WordRepetitionTaskService {
         }else if (newUnderstandingProgress >= 100) {
             newUnderstandingProgress = newUnderstandingProgress - 100;
         }
-
         userWordProgress.setUnderstandingLevel(newUnderstandingLevel);
         userWordProgress.setUnderstandingProgress(newUnderstandingProgress);
     }
