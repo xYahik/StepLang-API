@@ -35,19 +35,12 @@ public class ArrangeWordsController {
     @PostMapping("/create")
     public ResponseEntity<?> createArrangeWordsTask(@Valid @RequestBody CreateWordRepetitionTaskCommand command) throws JsonProcessingException {
         LanguageTask languageTask = languageTaskService.createTask(jwtUtil.getUserAuthInfo().getId(),command.getLanguageId(), LanguageTaskType.ARRANGE_WORDS);
+        System.out.println(languageTask.toString());
         return ResponseEntity.ok(taskMapper.toArrangeWordsTaskInfoDTO(languageTask));
     }
 
     @PostMapping("/answer")
     public ResponseEntity<?> answerArrangeWordsTask(@Valid @RequestBody UserAnswerToArrangeWordsTaskCommand command){
         return ResponseEntity.ok(arrangeWordsTaskService.userAnswerArrangeWordsTask(command));
-    }
-    @GetMapping("/status")
-    public ResponseEntity<?> statusArrangeWordsTask(@Valid @RequestBody GetArrangeWordsTaskStatusCommand command){
-        ArrangeWordsStatusInfo statusInfo = arrangeWordsTaskService.getWordRepetitionTaskStatus(command);
-        if(statusInfo.getCompleted()){
-            return ResponseEntity.ok(arrangeWordsTaskService.getWordRepetitionTaskReward(command));
-        }
-        return ResponseEntity.ok(statusInfo);
     }
 }

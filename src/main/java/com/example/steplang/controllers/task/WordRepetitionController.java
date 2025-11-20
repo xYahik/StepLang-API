@@ -34,12 +34,4 @@ public class WordRepetitionController {
 
         return ResponseEntity.ok(wordRepetitionTaskService.userAnswerOnWordRepetitionTask(command));
     }
-    @GetMapping("/status")
-    public ResponseEntity<?> getTaskStatus(@Valid @RequestBody GetWordRepetitionTaskCommand command){
-        WordRepetitionStatusInfo statusInfo = wordRepetitionTaskService.getWordRepetitionTaskStatus(command);
-        if(statusInfo.getCompleted()){
-            return ResponseEntity.ok(wordRepetitionTaskService.getWordRepetitionTaskReward(command));
-        }
-        return ResponseEntity.ok(statusInfo);
-    }
 }

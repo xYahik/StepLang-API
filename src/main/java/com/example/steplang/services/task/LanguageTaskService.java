@@ -1,12 +1,17 @@
 package com.example.steplang.services.task;
 
+import com.example.steplang.errors.LanguageError;
 import com.example.steplang.model.task.LanguageTask;
 import com.example.steplang.model.task.TaskDataBase;
 import com.example.steplang.errors.TaskError;
 import com.example.steplang.exceptions.ApiException;
+import com.example.steplang.model.task.TaskStatusInfo;
+import com.example.steplang.model.task.WordRepetitionStatusInfo;
+import com.example.steplang.model.task.arrangewords.ArrangeWordsStatusInfo;
 import com.example.steplang.repositories.task.LanguageTaskRepository;
 import com.example.steplang.utils.enums.LanguageTaskType;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -40,5 +45,22 @@ public class LanguageTaskService {
 
     public void deleteTask(String taskId){
         languageTaskRepo.deleteById(taskId);
+    }
+
+    public TaskStatusInfo getTaskStatus(String taskId){
+        LanguageTask task = languageTaskRepo.findById(taskId).orElse(null);
+        if(task == null)
+            throw new ApiException(TaskError.TASK_NOT_EXIST,String.format("Couldn't find task with id = '%s'",taskId));
+
+        TaskStatusInfo taskStatusInfo = null;
+        switch(task.getLanguageTaskType()){
+            case LanguageTaskType.WORD_REPETITION -> {
+                taskStatusInfo = wordRepetitionTaskService.getWordRepetitionTaskStatus(taskId);
+            }
+            case LanguageTaskType.ARRANGE_WORDS -> {
+                taskStatusInfo = arrangeWordsTaskService.getArrangeWordsTaskStatus(taskId);
+            }
+        }
+        return taskStatusInfo;
     }
 }

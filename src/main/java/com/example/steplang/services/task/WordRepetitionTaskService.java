@@ -194,8 +194,8 @@ public class WordRepetitionTaskService {
         ));
     }
 
-    public WordRepetitionStatusInfo getWordRepetitionTaskStatus(GetWordRepetitionTaskCommand command) {
-        WordRepetitionData wordRepetitionData = getWordRepetitionDataFromTask(command.getTaskId());
+    public WordRepetitionStatusInfo getWordRepetitionTaskStatus(String taskId) {
+        WordRepetitionData wordRepetitionData = getWordRepetitionDataFromTask(taskId);
 
         WordRepetitionStatusInfo currentTaskStatus = new WordRepetitionStatusInfo(
                 wordRepetitionData.getCurrentProgression(),

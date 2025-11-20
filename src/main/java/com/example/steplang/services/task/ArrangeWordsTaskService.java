@@ -169,8 +169,8 @@ public class ArrangeWordsTaskService {
         return arrangeWordsAnswerResponseDTO;
     }
 
-    public ArrangeWordsStatusInfo getWordRepetitionTaskStatus(GetArrangeWordsTaskStatusCommand command) {
-        ArrangeWordsData arrangeWordsData = getArrangeWordsDataFromTask(command.getTaskId());
+    public ArrangeWordsStatusInfo getArrangeWordsTaskStatus(String taskId) {
+        ArrangeWordsData arrangeWordsData = getArrangeWordsDataFromTask(taskId);
 
         ArrangeWordsStatusInfo currentTaskStatus = new ArrangeWordsStatusInfo(
                 arrangeWordsData.getCurrentProgression(),
