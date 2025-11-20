@@ -197,8 +197,8 @@ public class ArrangeWordsTaskService {
         return arrangeWordsData;
     }
 
-    public TaskReward getWordRepetitionTaskReward(GetArrangeWordsTaskStatusCommand command) {
-        ArrangeWordsData arrangeWordsData = getArrangeWordsDataFromTask(command.getTaskId());
+    public TaskReward getArrangeWordsTaskReward(String taskId) {
+        ArrangeWordsData arrangeWordsData = getArrangeWordsDataFromTask(taskId);
         return calculateArrangeWordsTaskReward(arrangeWordsData);
     }
 
