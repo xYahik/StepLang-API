@@ -39,7 +39,7 @@ public class LevelingService {
         levelingLogRepository.save(newLog);
     }
 
-    private Long ExperienceRequiredForNextLevel(Long currentLevel){
+    public Long ExperienceRequiredForNextLevel(Long currentLevel){
         return (long) (6 * Math.pow(currentLevel,1.5));
     }
 

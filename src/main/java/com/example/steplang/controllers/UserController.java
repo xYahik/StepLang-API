@@ -2,10 +2,7 @@ package com.example.steplang.controllers;
 
 import com.example.steplang.commands.AddLanguageToUserCommand;
 import com.example.steplang.commands.AddUserLanguageWordCommand;
-import com.example.steplang.dtos.user.UserAuthInfoDTO;
-import com.example.steplang.dtos.user.UserLanguageWordDTO;
-import com.example.steplang.dtos.user.UserMeDTO;
-import com.example.steplang.dtos.user.UserProfileDTO;
+import com.example.steplang.dtos.user.*;
 import com.example.steplang.entities.User;
 import com.example.steplang.entities.language.UserWordProgress;
 import com.example.steplang.mappers.UserMapper;
@@ -94,6 +91,9 @@ public class UserController {
     public ResponseEntity<?> getUserLevelingUpdate(@PathVariable Long languageId){
         Long userId = jwtUtil.getUserAuthInfo().getId();
         LevelingLog log = levelingService.getLatestLevelingLog(userId, languageId);
-        return ResponseEntity.ok(userMapper.toLevelingLogDto(log));
+        LevelingLogDTO logDTO = userMapper.toLevelingLogDto(log);
+        logDTO.setExpToPreviousLevel(levelingService.ExperienceRequiredForNextLevel(log.getPreviousLevel()));
+        logDTO.setExpToCurrentLevel(levelingService.ExperienceRequiredForNextLevel(log.getCurrentLevel()));
+        return ResponseEntity.ok(logDTO);
     }
 }
