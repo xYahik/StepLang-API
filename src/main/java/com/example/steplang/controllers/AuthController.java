@@ -8,6 +8,8 @@ import com.example.steplang.services.RefreshTokenService;
 import com.example.steplang.services.UserService;
 import com.example.steplang.utils.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +18,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -52,13 +54,23 @@ public class AuthController {
 
         String accessToken = jwtUtil.generateToken(email, appConfig.getAccessTokenSecondsTime()*1000);
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
-        return ResponseEntity.ok(Map.of(
-                "accessToken",accessToken,
-                "refreshToken", refreshToken.getToken()
+
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken.getToken())
+                .httpOnly(true)
+                .secure(false) //require https
+                .path("/")
+                .maxAge(appConfig.getRefreshTokenSecondsTime())
+                .sameSite("Lax") // or None + Secure=true on production
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+                .body(Map.of(
+                "accessToken",accessToken
         ));
     }
 
-    @PostMapping("/refresh")
+    @GetMapping("/refresh")
     public ResponseEntity<?> refresh(@CookieValue(name = "refreshToken") String token){
 
         RefreshToken refreshToken = refreshTokenService
