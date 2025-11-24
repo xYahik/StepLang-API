@@ -1,11 +1,13 @@
 package com.example.steplang.services.user;
 
 import com.example.steplang.entities.language.UserLanguage;
+import com.example.steplang.events.UserExpAddedEvent;
 import com.example.steplang.model.LevelingLog;
 import com.example.steplang.repositories.LevelingLogRepository;
 import com.example.steplang.repositories.language.UserLanguageRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -16,7 +18,7 @@ import java.util.UUID;
 public class LevelingService {
     private final UserLanguageRepository userLanguageRepo;
     private final LevelingLogRepository levelingLogRepository;
-
+    private final ApplicationEventPublisher publisher;
     @Transactional
     public void AddUserLanguageXP(Long userId, Long languageId, Long experience){
         UserLanguage userLanguage = userLanguageRepo.findByLanguageIdAndUserId(languageId,userId).orElse(null);
@@ -33,6 +35,7 @@ public class LevelingService {
         }else{
             userLanguage.setExperience(userLanguage.getExperience() + experience);
         }
+        publisher.publishEvent(new UserExpAddedEvent(userId,languageId,experience));
         userLanguageRepo.save(userLanguage);
 
         LevelingLog newLog = new LevelingLog(UUID.randomUUID().toString(),userId,languageId, Instant.now(),previousLevel,previousExperience,userLanguage.getLevel(),userLanguage.getExperience());
