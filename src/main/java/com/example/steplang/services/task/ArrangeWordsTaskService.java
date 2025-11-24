@@ -157,13 +157,17 @@ public class ArrangeWordsTaskService {
         if(correctAnswers.contains(taskItem.getUserAnswerOrder())) {
             arrangeWordsData.setCorrectlyAnswered(arrangeWordsData.getCorrectlyAnswered()+1);
             arrangeWordsAnswerResponseDTO.setIsCorrectAnswer(true);
-            levelingService.AddUserLanguageXP(languageTask.getUserId(),languageTask.getLanguageId(),calculateArrangeWordsTaskReward(arrangeWordsData).getEarnedExp());
         }
         else {
             arrangeWordsAnswerResponseDTO.setIsCorrectAnswer(false);
         }
         arrangeWordsData.setCurrentProgression(arrangeWordsData.getCurrentProgression()+1);
         taskItem.setAlreadyAnswered(true);
+
+        if(isTaskCompleted(arrangeWordsData)){
+            levelingService.AddUserLanguageXP(languageTask.getUserId(),languageTask.getLanguageId(),calculateArrangeWordsTaskReward(arrangeWordsData).getEarnedExp());
+        }
+
         languageTaskRepo.save(languageTask);
 
         return arrangeWordsAnswerResponseDTO;
@@ -195,11 +199,6 @@ public class ArrangeWordsTaskService {
         ArrangeWordsData arrangeWordsData = (ArrangeWordsData)languageTask.getTaskData();
 
         return arrangeWordsData;
-    }
-
-    public TaskReward getArrangeWordsTaskReward(String taskId) {
-        ArrangeWordsData arrangeWordsData = getArrangeWordsDataFromTask(taskId);
-        return calculateArrangeWordsTaskReward(arrangeWordsData);
     }
 
     private TaskReward calculateArrangeWordsTaskReward(ArrangeWordsData arrangeWordsData) {
