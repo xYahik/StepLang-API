@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonSubTypes({
         //Name - value of enum QuestActionType
         @JsonSubTypes.Type(value= QuestData_EarnExp.class, name="EARN_EXP"),
+        @JsonSubTypes.Type(value= QuestData_SpendTimeLearning.class, name="SPEND_TIME_LEARNING"),
 })
 public class QuestData {
 }

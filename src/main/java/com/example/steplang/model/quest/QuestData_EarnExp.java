@@ -10,9 +10,4 @@ import java.util.Random;
 public class QuestData_EarnExp extends QuestData{
     private Long currentExp;
     private Long requiredExp;
-
-    public QuestData_EarnExp(){
-        this.currentExp = 0L;
-        this.requiredExp = 10L + (long) (Math.random() * (30L - 10L));
-    }
 }
