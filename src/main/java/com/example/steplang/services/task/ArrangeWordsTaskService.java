@@ -12,6 +12,7 @@ import com.example.steplang.model.task.TaskReward;
 import com.example.steplang.model.task.arrangewords.ArrangeWordsData;
 import com.example.steplang.model.task.arrangewords.ArrangeWordsDataItem;
 import com.example.steplang.model.task.arrangewords.ArrangeWordsStatusInfo;
+import com.example.steplang.model.task.wordrepetition.WordRepetitionData;
 import com.example.steplang.repositories.language.UserLanguageRepository;
 import com.example.steplang.repositories.language.UserWordProgressRepository;
 import com.example.steplang.repositories.task.LanguageTaskRepository;
@@ -203,5 +204,10 @@ public class ArrangeWordsTaskService {
 
     private TaskReward calculateArrangeWordsTaskReward(ArrangeWordsData arrangeWordsData) {
         return new TaskReward(arrangeWordsData.getCorrectlyAnswered(),true);
+    }
+
+    public TaskReward getArrangeWordsTaskReward(String taskId) {
+        ArrangeWordsData arrangeWordsData = getArrangeWordsDataFromTask(taskId);
+        return calculateArrangeWordsTaskReward(arrangeWordsData);
     }
 }
