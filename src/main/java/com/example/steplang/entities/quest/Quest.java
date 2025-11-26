@@ -9,6 +9,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.Type;
 
+import java.time.Instant;
+
 @Entity
 @Data
 public class Quest {
@@ -24,5 +26,7 @@ public class Quest {
     @Type(JsonBinaryType.class)
     @Column(columnDefinition = "jsonb")
     private QuestData data;
+
+    private Instant validUntil;
 
 }
