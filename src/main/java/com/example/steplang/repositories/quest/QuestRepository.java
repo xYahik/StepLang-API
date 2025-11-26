@@ -1,6 +1,7 @@
 package com.example.steplang.repositories.quest;
 
 import com.example.steplang.entities.quest.Quest;
+import com.example.steplang.utils.enums.quest.QuestActionType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -20,6 +21,8 @@ public interface QuestRepository extends JpaRepository<Quest,Long> {
     @Query("select q from Quest q where q.userId = ?1 AND q.validUntil <= ?2")
     List<Quest> findByUserIdAndValidUntilLessThanEqual(Long userId, Instant validUntil);
 
+    @Query("select q from Quest q where q.userId = ?1 and q.type = ?2")
+    List<Quest> findByUserIdAndType(Long userId, QuestActionType type);
 
 
 }

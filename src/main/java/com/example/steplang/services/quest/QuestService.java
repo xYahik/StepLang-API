@@ -43,6 +43,10 @@ public class QuestService {
         }
         return dailyQuests;
     }
+    public List<Quest> getUserQuestsWithActionType(Long userId, QuestActionType actionType){
+        List<Quest> quests = questRepo.findByUserIdAndType(userId,actionType);
+        return quests;
+    }
     @Transactional
     public Quest cenerateNewRandomQuest(Long userId, QuestIntervalType IntervalType){
         List<QuestActionType> availableQuests = List.of(QuestActionType.EARN_EXP,QuestActionType.SPEND_TIME_LEARNING);
@@ -100,5 +104,23 @@ public class QuestService {
             }
         }
         return Instant.now();
+    }
+
+    @Transactional
+    @EventListener
+    public void onUserGainedExp(UserExpAddedEvent event) {
+        List<Quest> quests = getUserQuestsWithActionType(event.getUserId(),QuestActionType.EARN_EXP);
+
+        for(Quest quest: quests){
+            QuestData_EarnExp data = (QuestData_EarnExp) quest.getData();
+            if(data.getCurrentExp() + event.getExp() < data.getRequiredExp()){
+                data.setCurrentExp(data.getCurrentExp() + event.getExp());
+            }else{
+                data.setCurrentExp(data.getRequiredExp());
+                quest.setStatus(QuestStatus.COMPLETED);
+            }
+        }
+
+        questRepo.saveAll(quests);
     }
 }
