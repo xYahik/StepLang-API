@@ -9,16 +9,14 @@ import com.example.steplang.errors.UserLanguageError;
 import com.example.steplang.exceptions.ApiException;
 import com.example.steplang.model.task.LanguageTask;
 import com.example.steplang.model.task.TaskReward;
-import com.example.steplang.model.task.WordRepetitionStatusInfo;
 import com.example.steplang.model.task.arrangewords.ArrangeWordsData;
 import com.example.steplang.model.task.arrangewords.ArrangeWordsDataItem;
 import com.example.steplang.model.task.arrangewords.ArrangeWordsStatusInfo;
 import com.example.steplang.model.task.wordrepetition.WordRepetitionData;
-import com.example.steplang.model.task.wordrepetition.WordRepetitionItem;
-import com.example.steplang.repositories.UserRepository;
 import com.example.steplang.repositories.language.UserLanguageRepository;
 import com.example.steplang.repositories.language.UserWordProgressRepository;
 import com.example.steplang.repositories.task.LanguageTaskRepository;
+import com.example.steplang.services.user.LevelingService;
 import com.example.steplang.utils.JwtUtil;
 import com.example.steplang.utils.ai.AIAgent;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -38,6 +36,8 @@ public class ArrangeWordsTaskService {
     private final AIAgent aiAgent;
     private final LanguageTaskRepository languageTaskRepo;
     private final JwtUtil jwtUtil;
+    private final LevelingService levelingService;
+
     public ArrangeWordsData createArrangeWordsTask(Long userId, Long languageId) {
         ArrangeWordsData arrangeWordsData = new ArrangeWordsData();
         List<ArrangeWordsDataItem> arrangeWordsDataItems = null;
@@ -164,6 +164,11 @@ public class ArrangeWordsTaskService {
         }
         arrangeWordsData.setCurrentProgression(arrangeWordsData.getCurrentProgression()+1);
         taskItem.setAlreadyAnswered(true);
+
+        if(isTaskCompleted(arrangeWordsData)){
+            levelingService.AddUserLanguageXP(languageTask.getUserId(),languageTask.getLanguageId(),calculateArrangeWordsTaskReward(arrangeWordsData).getEarnedExp());
+        }
+
         languageTaskRepo.save(languageTask);
 
         return arrangeWordsAnswerResponseDTO;
@@ -197,12 +202,12 @@ public class ArrangeWordsTaskService {
         return arrangeWordsData;
     }
 
+    private TaskReward calculateArrangeWordsTaskReward(ArrangeWordsData arrangeWordsData) {
+        return new TaskReward(arrangeWordsData.getCorrectlyAnswered(),true);
+    }
+
     public TaskReward getArrangeWordsTaskReward(String taskId) {
         ArrangeWordsData arrangeWordsData = getArrangeWordsDataFromTask(taskId);
         return calculateArrangeWordsTaskReward(arrangeWordsData);
-    }
-
-    private TaskReward calculateArrangeWordsTaskReward(ArrangeWordsData arrangeWordsData) {
-        return new TaskReward(arrangeWordsData.getCorrectlyAnswered(),true);
     }
 }

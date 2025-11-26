@@ -2,15 +2,15 @@ package com.example.steplang.controllers;
 
 import com.example.steplang.commands.AddLanguageToUserCommand;
 import com.example.steplang.commands.AddUserLanguageWordCommand;
-import com.example.steplang.dtos.user.UserAuthInfoDTO;
-import com.example.steplang.dtos.user.UserLanguageWordDTO;
-import com.example.steplang.dtos.user.UserMeDTO;
-import com.example.steplang.dtos.user.UserProfileDTO;
+import com.example.steplang.dtos.user.*;
 import com.example.steplang.entities.User;
 import com.example.steplang.entities.language.UserWordProgress;
 import com.example.steplang.mappers.UserMapper;
+import com.example.steplang.model.LevelingLog;
+import com.example.steplang.repositories.LevelingLogRepository;
 import com.example.steplang.repositories.UserRepository;
 import com.example.steplang.services.UserService;
+import com.example.steplang.services.user.LevelingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +31,7 @@ public class UserController {
     private final UserService userService;
     private final JwtUtil jwtUtil;
     private final UserMapper userMapper;
+    private final LevelingService levelingService;
 
     @GetMapping("/me")
     public ResponseEntity<?> getMe(){
@@ -86,4 +87,13 @@ public class UserController {
         return ResponseEntity.ok(dto);
     }
 
+    @GetMapping("/leveling/update/{languageId}")
+    public ResponseEntity<?> getUserLevelingUpdate(@PathVariable Long languageId){
+        Long userId = jwtUtil.getUserAuthInfo().getId();
+        LevelingLog log = levelingService.getLatestLevelingLog(userId, languageId);
+        LevelingLogDTO logDTO = userMapper.toLevelingLogDto(log);
+        logDTO.setExpToPreviousLevel(levelingService.ExperienceRequiredForNextLevel(log.getPreviousLevel()));
+        logDTO.setExpToCurrentLevel(levelingService.ExperienceRequiredForNextLevel(log.getCurrentLevel()));
+        return ResponseEntity.ok(logDTO);
+    }
 }
