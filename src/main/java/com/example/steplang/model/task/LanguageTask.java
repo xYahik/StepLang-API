@@ -9,6 +9,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
 
+import java.time.Instant;
+
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,4 +29,6 @@ public class LanguageTask {
     private LanguageTaskType languageTaskType;
 
     private TaskDataBase taskData;
+
+    private Instant taskCreationTime;
 }

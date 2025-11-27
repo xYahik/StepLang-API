@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class QuestData_SpendTimeLearningDTO extends QuestDataDTO{
-    private Double currentTime;
-    private Double requiredTime;
+    private Long currentTimeSeconds;
+    private Long requiredTimeSeconds;
 }

@@ -1,11 +1,14 @@
 package com.example.steplang.services.quest;
 
 import com.example.steplang.entities.quest.Quest;
+import com.example.steplang.events.TaskCompletedEvent;
 import com.example.steplang.events.UserExpAddedEvent;
 import com.example.steplang.model.quest.QuestData;
 import com.example.steplang.model.quest.QuestData_EarnExp;
 import com.example.steplang.model.quest.QuestData_SpendTimeLearning;
+import com.example.steplang.model.task.LanguageTask;
 import com.example.steplang.repositories.quest.QuestRepository;
+import com.example.steplang.repositories.task.LanguageTaskRepository;
 import com.example.steplang.utils.enums.quest.QuestActionType;
 import com.example.steplang.utils.enums.quest.QuestIntervalType;
 import com.example.steplang.utils.enums.quest.QuestStatus;
@@ -15,11 +18,13 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -27,6 +32,7 @@ import java.util.Random;
 public class QuestService {
 
     private final QuestRepository questRepo;
+    private final LanguageTaskRepository taskRepo;
     public List<Quest> getUserQuests(Long userId){
         List<Quest> quests = new ArrayList<>();
 
@@ -68,7 +74,7 @@ public class QuestService {
     private QuestData generateQuestData(QuestActionType type){
         switch(type){
             case QuestActionType.EARN_EXP -> {return new QuestData_EarnExp(0L,10L + (long) (Math.random() *(30L-10L)));}
-            case QuestActionType.SPEND_TIME_LEARNING -> {return new QuestData_SpendTimeLearning(0D, 10D + (long) (Math.random() * (30D - 10D)));}
+            case QuestActionType.SPEND_TIME_LEARNING -> {return new QuestData_SpendTimeLearning(0L, (10L + (long) (Math.random() * (30L - 10L))) * 60);}
         }
         return new QuestData();
     }
@@ -121,6 +127,24 @@ public class QuestService {
             }
         }
 
+        questRepo.saveAll(quests);
+    }
+    @Transactional
+    @EventListener
+    public void onTaskCompleted(TaskCompletedEvent event){
+        LanguageTask languageTask = taskRepo.findById(event.getTaskId()).orElse(null);
+        Long taskCompletionTimeSeconds = Duration.between(languageTask.getTaskCreationTime(),Instant.now()).getSeconds();
+        List<Quest> quests = getUserQuestsWithActionType(languageTask.getUserId(),QuestActionType.SPEND_TIME_LEARNING);
+
+        for(Quest quest: quests){
+            QuestData_SpendTimeLearning data = (QuestData_SpendTimeLearning) quest.getData();
+            if(data.getCurrentTimeSeconds() + taskCompletionTimeSeconds < data.getRequiredTimeSeconds()){
+                data.setCurrentTimeSeconds(data.getCurrentTimeSeconds() + taskCompletionTimeSeconds);
+            }else{
+                data.setCurrentTimeSeconds(data.getRequiredTimeSeconds());
+                quest.setStatus(QuestStatus.COMPLETED);
+            }
+        }
         questRepo.saveAll(quests);
     }
 }

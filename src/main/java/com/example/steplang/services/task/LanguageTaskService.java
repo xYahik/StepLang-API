@@ -1,6 +1,7 @@
 package com.example.steplang.services.task;
 
 import com.example.steplang.errors.LanguageError;
+import com.example.steplang.events.TaskCompletedEvent;
 import com.example.steplang.model.task.*;
 import com.example.steplang.errors.TaskError;
 import com.example.steplang.exceptions.ApiException;
@@ -8,9 +9,11 @@ import com.example.steplang.model.task.arrangewords.ArrangeWordsStatusInfo;
 import com.example.steplang.repositories.task.LanguageTaskRepository;
 import com.example.steplang.utils.enums.LanguageTaskType;
 import lombok.AllArgsConstructor;
+import org.springframework.context.event.EventListener;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.*;
 
 @Service
@@ -31,7 +34,7 @@ public class LanguageTaskService {
         if(taskData == null)
             throw new ApiException(TaskError.COULD_NOT_CREATE_TASK,"Couldn't create WordRepetitionTask");
 
-        LanguageTask languageTask = new LanguageTask(taskId,userId,languageId,taskType,taskData);
+        LanguageTask languageTask = new LanguageTask(taskId,userId,languageId,taskType,taskData, Instant.now());
         languageTaskRepo.save(languageTask);
         return languageTask;
     }

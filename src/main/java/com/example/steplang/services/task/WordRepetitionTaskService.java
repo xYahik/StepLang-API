@@ -5,6 +5,7 @@ import com.example.steplang.commands.task.UserAnswerToWordRepetitionTaskCommand;
 import com.example.steplang.dtos.task.WordRepetitionAnswerResponseDTO;
 import com.example.steplang.entities.language.UserLanguage;
 import com.example.steplang.entities.language.UserWordProgress;
+import com.example.steplang.events.TaskCompletedEvent;
 import com.example.steplang.model.task.LanguageTask;
 import com.example.steplang.model.task.wordrepetition.WordRepetitionAnswer;
 import com.example.steplang.model.task.wordrepetition.WordRepetitionData;
@@ -23,6 +24,7 @@ import com.example.steplang.utils.JwtUtil;
 import com.example.steplang.utils.enums.UnderstandingLevel;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -42,6 +44,8 @@ public class WordRepetitionTaskService {
     private final UserLanguageRepository userLanguageRepo;
     private final LanguageTaskRepository languageTaskRepo;
     private final LevelingService levelingService;
+    private final ApplicationEventPublisher publisher;
+
     public WordRepetitionData createWordRepetitionTask(Long userId, Long languageId){
         WordRepetitionData wordRepetitionData = new WordRepetitionData();
         wordRepetitionData.setCorrectlyAnswered(0L);
@@ -117,6 +121,7 @@ public class WordRepetitionTaskService {
 
         if(isTaskCompleted(wordRepetitionData)){
             levelingService.AddUserLanguageXP(languageTask.getUserId(),languageTask.getLanguageId(),calculateWordRepetitionTaskReward(wordRepetitionData).getEarnedExp());
+            publisher.publishEvent(new TaskCompletedEvent(command.getTaskId()));
         }
 
         WordRepetitionAnswerResponseDTO responseDTO = new WordRepetitionAnswerResponseDTO();

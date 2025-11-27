@@ -6,6 +6,8 @@ import com.example.steplang.dtos.task.ArrangeWordsAnswerResponseDTO;
 import com.example.steplang.entities.language.UserLanguage;
 import com.example.steplang.errors.TaskError;
 import com.example.steplang.errors.UserLanguageError;
+import com.example.steplang.events.TaskCompletedEvent;
+import com.example.steplang.events.UserExpAddedEvent;
 import com.example.steplang.exceptions.ApiException;
 import com.example.steplang.model.task.LanguageTask;
 import com.example.steplang.model.task.TaskReward;
@@ -22,6 +24,7 @@ import com.example.steplang.utils.ai.AIAgent;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -37,6 +40,7 @@ public class ArrangeWordsTaskService {
     private final LanguageTaskRepository languageTaskRepo;
     private final JwtUtil jwtUtil;
     private final LevelingService levelingService;
+    private final ApplicationEventPublisher publisher;
 
     public ArrangeWordsData createArrangeWordsTask(Long userId, Long languageId) {
         ArrangeWordsData arrangeWordsData = new ArrangeWordsData();
@@ -167,6 +171,7 @@ public class ArrangeWordsTaskService {
 
         if(isTaskCompleted(arrangeWordsData)){
             levelingService.AddUserLanguageXP(languageTask.getUserId(),languageTask.getLanguageId(),calculateArrangeWordsTaskReward(arrangeWordsData).getEarnedExp());
+            publisher.publishEvent(new TaskCompletedEvent(command.getTaskId()));
         }
 
         languageTaskRepo.save(languageTask);
