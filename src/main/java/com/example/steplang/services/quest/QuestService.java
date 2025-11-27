@@ -1,5 +1,6 @@
 package com.example.steplang.services.quest;
 
+import com.example.steplang.config.QuestConfig;
 import com.example.steplang.entities.quest.Quest;
 import com.example.steplang.events.TaskCompletedEvent;
 import com.example.steplang.events.UserExpAddedEvent;
@@ -33,6 +34,7 @@ public class QuestService {
 
     private final QuestRepository questRepo;
     private final LanguageTaskRepository taskRepo;
+    private final QuestConfig questConfig;
     public List<Quest> getUserQuests(Long userId){
         List<Quest> quests = new ArrayList<>();
 
@@ -54,27 +56,32 @@ public class QuestService {
         return quests;
     }
     @Transactional
-    public Quest cenerateNewRandomQuest(Long userId, QuestIntervalType IntervalType){
+    public Quest cenerateNewRandomQuest(Long userId, QuestIntervalType intervalType){
         List<QuestActionType> availableQuests = List.of(QuestActionType.EARN_EXP,QuestActionType.SPEND_TIME_LEARNING);
         Quest quest = new Quest();
         quest.setUserId(userId);
         quest.setStatus(QuestStatus.IN_PROGRESS);
-        quest.setIntervalType(IntervalType);
-        quest.setValidUntil(calculateValidUntilTime(IntervalType));
+        quest.setIntervalType(intervalType);
+        quest.setValidUntil(calculateValidUntilTime(intervalType));
 
         Random randomGenerator = new Random();
         quest.setType(availableQuests.get(randomGenerator.nextInt(availableQuests.size())));
 
-        quest.setData(generateQuestData(quest.getType()));
+        quest.setData(generateQuestData(quest.getType(),intervalType));
 
         questRepo.save(quest);
         return quest;
     }
 
-    private QuestData generateQuestData(QuestActionType type){
+    private QuestData generateQuestData(QuestActionType type, QuestIntervalType intervalType){
+        Double multiplier = 1.0;
+        switch(intervalType){
+            case QuestIntervalType.DAILY -> multiplier = 1.0;
+            case QuestIntervalType.WEEKLY -> multiplier = questConfig.getWeeklyQuestMultiplier();
+        }
         switch(type){
-            case QuestActionType.EARN_EXP -> {return new QuestData_EarnExp(0L,10L + (long) (Math.random() *(30L-10L)));}
-            case QuestActionType.SPEND_TIME_LEARNING -> {return new QuestData_SpendTimeLearning(0L, (10L + (long) (Math.random() * (30L - 10L))) * 60);}
+            case QuestActionType.EARN_EXP -> {return new QuestData_EarnExp(0L, (long) ((questConfig.getEarnExpMinValue()*multiplier + (long) (Math.random() *(questConfig.getEarnExpMaxValue()*multiplier-questConfig.getEarnExpMinValue()*multiplier)))));}
+            case QuestActionType.SPEND_TIME_LEARNING -> {return new QuestData_SpendTimeLearning(0L, (long) ((questConfig.getSpendingTimeLearningMinMinutes()*multiplier + (long) (Math.random() * (questConfig.getSpendingTimeLearningMaxMinutes()*multiplier - questConfig.getSpendingTimeLearningMinMinutes()*multiplier))) * 60));}
         }
         return new QuestData();
     }
