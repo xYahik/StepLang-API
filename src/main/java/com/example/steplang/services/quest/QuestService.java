@@ -35,6 +35,10 @@ public class QuestService {
     private final LanguageTaskRepository taskRepo;
     private final QuestConfig questConfig;
     public List<Quest> getUserQuests(Long userId){
+
+        if(!questRepo.findOldQuestsByUserId(userId).isEmpty())
+            questRepo.deleteExpiredQuestsByUserId(userId);
+
         List<Quest> quests = new ArrayList<>();
 
         quests.addAll(getUserDailyQuests(userId));

@@ -19,8 +19,13 @@ public interface QuestRepository extends JpaRepository<Quest,Long> {
     @Query("DELETE from Quest q WHERE q.validUntil < CURRENT_TIMESTAMP OR q.validUntil IS NULL")
     void deleteExpiredQuests();
 
-    @Query("select q from Quest q where q.userId = ?1 AND q.validUntil <= ?2")
-    List<Quest> findByUserIdAndValidUntilLessThanEqual(Long userId, Instant validUntil);
+    @Query("select q from Quest q where q.userId = ?1 AND CURRENT_TIMESTAMP >= q.validUntil")
+    List<Quest> findOldQuestsByUserId(Long userId);
+
+    @Transactional
+    @Modifying
+    @Query("DELETE from Quest q WHERE q.userId = ?1 AND CURRENT_TIMESTAMP >= q.validUntil")
+    void deleteExpiredQuestsByUserId(Long userId);
 
     @Query("select q from Quest q where q.userId = ?1 and q.type = ?2")
     List<Quest> findByUserIdAndType(Long userId, QuestActionType type);
