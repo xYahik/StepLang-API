@@ -18,6 +18,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Array;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.Instant;
@@ -70,6 +71,20 @@ public class QuestService {
     @Transactional
     private Quest generateNewRandomQuest(Long userId, QuestIntervalType intervalType){
         List<QuestActionType> availableQuests = List.of(QuestActionType.EARN_EXP,QuestActionType.SPEND_TIME_LEARNING);
+
+        //Try to prevent from generating same quests if possible
+
+        List<QuestActionType> notCreatedQuestTypeList = new ArrayList<>(availableQuests);
+        notCreatedQuestTypeList.removeAll(questRepo.findByUserIdAndIntervalType(userId,intervalType)
+                .stream()
+                .map(Quest::getType)
+                .toList());
+
+        if(!notCreatedQuestTypeList.isEmpty())
+            availableQuests = notCreatedQuestTypeList;
+
+        //Generate Quest
+        List<QuestActionType> alreadyCreated = new ArrayList<>();
         Quest quest = new Quest();
         quest.setUserId(userId);
         quest.setStatus(QuestStatus.IN_PROGRESS);
