@@ -39,11 +39,11 @@ public class QuestService {
         List<Quest> quests = new ArrayList<>();
 
         quests.addAll(getUserDailyQuests(userId));
-
+        quests.addAll(getUserWeeklyQuests(userId));
         return quests;
     }
-    public List<Quest> getUserDailyQuests(Long userId){
-        List<Quest> dailyQuests = questRepo.findByUserIdAndValidUntilLessThanEqual(userId,calculateValidUntilTime(QuestIntervalType.DAILY));
+    private List<Quest> getUserDailyQuests(Long userId){
+        List<Quest> dailyQuests = questRepo.findByUserIdAndIntervalType(userId,QuestIntervalType.DAILY);
         if(dailyQuests.size()<3){
             for(int currentQuests = dailyQuests.size();currentQuests<3;currentQuests++){
                 dailyQuests.add(cenerateNewRandomQuest(userId,QuestIntervalType.DAILY));
@@ -51,12 +51,21 @@ public class QuestService {
         }
         return dailyQuests;
     }
-    public List<Quest> getUserQuestsWithActionType(Long userId, QuestActionType actionType){
+    private List<Quest> getUserWeeklyQuests(Long userId){
+        List<Quest> weeklyQuests = questRepo.findByUserIdAndIntervalType(userId,QuestIntervalType.WEEKLY);
+        if(weeklyQuests.size()<2){
+            for(int currentQuests = weeklyQuests.size();currentQuests<2;currentQuests++){
+                weeklyQuests.add(cenerateNewRandomQuest(userId,QuestIntervalType.WEEKLY));
+            }
+        }
+        return weeklyQuests;
+    }
+    private List<Quest> getUserQuestsWithActionType(Long userId, QuestActionType actionType){
         List<Quest> quests = questRepo.findByUserIdAndType(userId,actionType);
         return quests;
     }
     @Transactional
-    public Quest cenerateNewRandomQuest(Long userId, QuestIntervalType intervalType){
+    private Quest cenerateNewRandomQuest(Long userId, QuestIntervalType intervalType){
         List<QuestActionType> availableQuests = List.of(QuestActionType.EARN_EXP,QuestActionType.SPEND_TIME_LEARNING);
         Quest quest = new Quest();
         quest.setUserId(userId);
