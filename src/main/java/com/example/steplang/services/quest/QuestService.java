@@ -25,7 +25,6 @@ import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -46,7 +45,7 @@ public class QuestService {
         List<Quest> dailyQuests = questRepo.findByUserIdAndIntervalType(userId,QuestIntervalType.DAILY);
         if(dailyQuests.size()<3){
             for(int currentQuests = dailyQuests.size();currentQuests<3;currentQuests++){
-                dailyQuests.add(cenerateNewRandomQuest(userId,QuestIntervalType.DAILY));
+                dailyQuests.add(generateNewRandomQuest(userId,QuestIntervalType.DAILY));
             }
         }
         return dailyQuests;
@@ -55,7 +54,7 @@ public class QuestService {
         List<Quest> weeklyQuests = questRepo.findByUserIdAndIntervalType(userId,QuestIntervalType.WEEKLY);
         if(weeklyQuests.size()<2){
             for(int currentQuests = weeklyQuests.size();currentQuests<2;currentQuests++){
-                weeklyQuests.add(cenerateNewRandomQuest(userId,QuestIntervalType.WEEKLY));
+                weeklyQuests.add(generateNewRandomQuest(userId,QuestIntervalType.WEEKLY));
             }
         }
         return weeklyQuests;
@@ -65,7 +64,7 @@ public class QuestService {
         return quests;
     }
     @Transactional
-    private Quest cenerateNewRandomQuest(Long userId, QuestIntervalType intervalType){
+    private Quest generateNewRandomQuest(Long userId, QuestIntervalType intervalType){
         List<QuestActionType> availableQuests = List.of(QuestActionType.EARN_EXP,QuestActionType.SPEND_TIME_LEARNING);
         Quest quest = new Quest();
         quest.setUserId(userId);
