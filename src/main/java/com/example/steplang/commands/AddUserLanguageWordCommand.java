@@ -11,6 +11,8 @@ public class AddUserLanguageWordCommand {
 
     @NotNull(message = "'wordId' is required")
     private Long wordId;
+    @NotNull(message = "'wordId' is required")
+    private Long formId;
 
     private UnderstandingLevel understandingLevel;
     private Long understandingProgress;

@@ -1,13 +1,8 @@
 package com.example.steplang.controllers.language;
 
-import com.example.steplang.commands.language.AddCategoryToWordCommand;
-import com.example.steplang.commands.language.AddNewLanguageCommand;
-import com.example.steplang.commands.language.CreateNewCategoryCommand;
-import com.example.steplang.commands.language.CreateNewWordCommand;
+import com.example.steplang.commands.language.*;
 import com.example.steplang.dtos.language.*;
-import com.example.steplang.entities.language.Language;
-import com.example.steplang.entities.language.Word;
-import com.example.steplang.entities.language.WordCategory;
+import com.example.steplang.entities.language.*;
 import com.example.steplang.errors.LanguageError;
 import com.example.steplang.exceptions.ApiException;
 import com.example.steplang.mappers.LanguageMapper;
@@ -15,6 +10,7 @@ import com.example.steplang.mappers.WordMapper;
 import com.example.steplang.services.language.LanguageService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -65,13 +61,25 @@ public class LanguageController {
 
 
     //Words
-    @PostMapping("{id}/word/add")
-    public ResponseEntity<?> addNewLanguageWord(@PathVariable Long id, @Valid @RequestBody CreateNewWordCommand command){
-        command.setLanguageId(id);
+    @PostMapping("{languageId}/word/add")
+    public ResponseEntity<?> addNewLanguageWord(@PathVariable Long languageId, @Valid @RequestBody CreateNewWordCommand command){
+        command.setLanguageId(languageId);
         Word word = languageService.addNewWord(command);
         return ResponseEntity.ok(wordMapper.toDto(word));
     }
 
+    @PostMapping("{languageId}/word/form/add")
+    public ResponseEntity<?> addNewLanguageWordForm(@PathVariable Long languageId, @Valid @RequestBody AddNewWordFormCommand command){
+        command.setLanguageId(languageId);
+        WordForm wordForm = languageService.addNewWordForm(command);
+        return ResponseEntity.ok("");
+    }
+    @PostMapping("{languageId}/word/form/translation/add")
+    public ResponseEntity<?> addNewLanguageWordFormTranslation(@PathVariable Long languageId, @Valid @RequestBody AddNewWordFormTranslationCommand command){
+        command.setLanguageId(languageId);
+        WordFormTranslation wordFormTranslation = languageService.addNewWordFormTranslation(command);
+        return ResponseEntity.ok("");
+    }
     @PostMapping("{id}/{wordId}/category/add")
     public ResponseEntity<?> addCategoryToWord(@PathVariable Long id, @PathVariable Long wordId, @RequestBody AddCategoryToWordCommand command){
         String message = languageService.addCategoryToWord(id,wordId,command);

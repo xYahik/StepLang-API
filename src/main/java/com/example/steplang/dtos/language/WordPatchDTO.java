@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class WordPatchDTO {
-    private String word;
+    private String baseForm;
     private String translation;
     private ReferenceLevel referenceLevel;
     private Integer importanceLevel;

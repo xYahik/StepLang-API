@@ -20,11 +20,11 @@ public class LanguageTaskService {
     private final WordRepetitionTaskService wordRepetitionTaskService;
     private final ArrangeWordsTaskService arrangeWordsTaskService;
 
-    public LanguageTask createTask(Long userId,Long languageId,LanguageTaskType taskType){
+    public LanguageTask createTask(Long userId,Long languageId,Long targetLanguageId, LanguageTaskType taskType){
         String taskId = UUID.randomUUID().toString();
         TaskDataBase taskData = null;
         switch(taskType){
-            case LanguageTaskType.WORD_REPETITION -> taskData = wordRepetitionTaskService.createWordRepetitionTask(userId,languageId);
+            case LanguageTaskType.WORD_REPETITION -> taskData = wordRepetitionTaskService.createWordRepetitionTask(userId,languageId,targetLanguageId);
             case LanguageTaskType.ARRANGE_WORDS -> taskData = arrangeWordsTaskService.createArrangeWordsTask(userId,languageId);
         }
 

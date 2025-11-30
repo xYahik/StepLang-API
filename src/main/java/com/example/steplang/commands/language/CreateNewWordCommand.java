@@ -1,6 +1,8 @@
 package com.example.steplang.commands.language;
 
+import com.example.steplang.utils.enums.language.WordType;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
@@ -12,10 +14,10 @@ import lombok.Setter;
 public class CreateNewWordCommand {
     private Long languageId;
 
-    @NotBlank(message = "'word' is required")
-    private final String word;
+    @NotBlank(message = "'baseForm' is required")
+    private final String baseForm;
 
-    @NotBlank(message = "'translation' is required")
-    private final String translation;
+    @NotNull(message = "'wordType' is required")
+    private final WordType wordType;
 
 }

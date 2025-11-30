@@ -3,17 +3,12 @@ package com.example.steplang.services;
 import com.example.steplang.commands.AddLanguageToUserCommand;
 import com.example.steplang.commands.AddUserLanguageWordCommand;
 import com.example.steplang.entities.User;
-import com.example.steplang.entities.language.Language;
-import com.example.steplang.entities.language.UserLanguage;
-import com.example.steplang.entities.language.UserWordProgress;
-import com.example.steplang.entities.language.Word;
+import com.example.steplang.entities.language.*;
+import com.example.steplang.errors.LanguageError;
 import com.example.steplang.errors.UserLanguageError;
 import com.example.steplang.exceptions.ApiException;
 import com.example.steplang.repositories.UserRepository;
-import com.example.steplang.repositories.language.LanguageRepository;
-import com.example.steplang.repositories.language.UserLanguageRepository;
-import com.example.steplang.repositories.language.UserWordProgressRepository;
-import com.example.steplang.repositories.language.WordRepository;
+import com.example.steplang.repositories.language.*;
 import com.example.steplang.utils.enums.UnderstandingLevel;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -34,6 +29,7 @@ public class UserService {
 
     private final LanguageRepository languageRepo;
     private final WordRepository wordRepository;
+    private final WordFormRepository wordFormRepo;
 
     @Transactional
     public User register(String username, String email, String password){
@@ -73,9 +69,14 @@ public class UserService {
         if(userLanguage == null)
             throw new ApiException(UserLanguageError.USER_NOT_LEARNING_LANGUAGE,String.format("User with id = '%d' is not learning language with id ='%d'",userId,languageId));
 
-        Word word = wordRepository.findWordByLanguageIdAndWordId(languageId,command.getWordId()).orElse(null);
-        if(word == null)
-            throw new ApiException(UserLanguageError.LANGUAGE_AND_WORD_ID_NOT_FOUND,String.format("Word with wordId = '%d' and languageId = '%d' not found",command.getWordId(),languageId));
+        //Word word = wordRepository.findWordByLanguageIdAndWordId(languageId,command.getWordId()).orElse(null);
+        //if(word == null)
+        //    throw new ApiException(UserLanguageError.LANGUAGE_AND_WORD_ID_NOT_FOUND,String.format("Word with wordId = '%d' and languageId = '%d' not found",command.getWordId(),languageId));
+
+        WordForm wordForm = wordFormRepo.findById(command.getFormId()).orElse(null);
+        if(wordForm == null){
+            throw new ApiException(LanguageError.WORD_FORM_ID_NOT_FOUND,String.format("Couldn't find wordForm with formId = '%d'", command.getFormId()));
+        }
 
         if(userWordProgressRepo.existsByWordIdAndUserLanguage(command.getWordId(),userLanguage))
             throw new ApiException(UserLanguageError.USER_ALREADY_LEARNING_WORD,String.format("User already learning word with wordId = '%d' and languageId = '%d' not found",command.getWordId(),languageId));
@@ -84,7 +85,7 @@ public class UserService {
         Long understandingProgress = command.getUnderstandingProgress();
 
 
-        UserWordProgress userWordProgress = new UserWordProgress(word,userLanguage, understandingLevel != null ?understandingLevel : UnderstandingLevel.NEW, understandingProgress != null? understandingProgress : 0L);
+        UserWordProgress userWordProgress = new UserWordProgress(wordForm,userLanguage, understandingLevel != null ?understandingLevel : UnderstandingLevel.NEW, understandingProgress != null? understandingProgress : 0L);
         userWordProgressRepo.save(userWordProgress);
     }
 

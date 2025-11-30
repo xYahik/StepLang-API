@@ -19,7 +19,7 @@ public class UserWordProgress {
     private Long id;
 
     @ManyToOne
-    private Word word;
+    private WordForm wordForm;
 
     @ManyToOne
     private UserLanguage userLanguage;
@@ -33,8 +33,8 @@ public class UserWordProgress {
 
     private Instant nextRepetitionDate;
 
-    public UserWordProgress(Word word, UserLanguage userLanguage, UnderstandingLevel understandingLevel, Long understandingProgress){
-        this.word = word;
+    public UserWordProgress(WordForm wordForm, UserLanguage userLanguage, UnderstandingLevel understandingLevel, Long understandingProgress){
+        this.wordForm = wordForm;
         this.userLanguage = userLanguage;
         this.understandingLevel = understandingLevel;
         this.understandingProgress = understandingProgress;

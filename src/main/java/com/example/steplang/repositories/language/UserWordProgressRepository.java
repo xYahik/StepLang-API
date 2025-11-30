@@ -13,11 +13,12 @@ import java.util.Optional;
 
 @Repository
 public interface UserWordProgressRepository extends JpaRepository<UserWordProgress,Long> {
-    @Query("select uwp from UserWordProgress uwp where uwp.word.id = ?1 and uwp.userLanguage = ?2")
+    @Query("select uwp from UserWordProgress uwp where uwp.wordForm.word.id = ?1 and uwp.userLanguage = ?2")
     Optional<UserWordProgress> findByWordIdAndUserLanguage(Long wordId, UserLanguage userLanguage);
 
-    @Query("select (count(uwp) > 0) from UserWordProgress uwp where uwp.word.id = ?1 and uwp.userLanguage = ?2")
+    @Query("select (count(uwp) > 0) from UserWordProgress uwp where uwp.wordForm.word.id = ?1 and uwp.userLanguage = ?2")
     boolean existsByWordIdAndUserLanguage(Long wordId, UserLanguage userLanguage);
+
 
     @Query(value = """
     SELECT *
@@ -40,9 +41,9 @@ public interface UserWordProgressRepository extends JpaRepository<UserWordProgre
     List<UserWordProgress> find10MostNeededRepetition(@Param("userLanguageId") Long userLanguageId);
 
     @Query( value = """
-            SELECT w.word
+            SELECT w.word.baseForm
             FROM UserWordProgress uwp
-            JOIN uwp.word w
+            JOIN uwp.wordForm w
             WHERE uwp.userLanguage.id = :userLanguageId
             """)
     List<String> findAllWordsByUserLanguage(@Param("userLanguageId")Long id);

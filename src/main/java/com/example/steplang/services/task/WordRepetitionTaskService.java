@@ -5,6 +5,8 @@ import com.example.steplang.commands.task.UserAnswerToWordRepetitionTaskCommand;
 import com.example.steplang.dtos.task.WordRepetitionAnswerResponseDTO;
 import com.example.steplang.entities.language.UserLanguage;
 import com.example.steplang.entities.language.UserWordProgress;
+import com.example.steplang.entities.language.WordForm;
+import com.example.steplang.entities.language.WordFormTranslation;
 import com.example.steplang.model.task.LanguageTask;
 import com.example.steplang.model.task.wordrepetition.WordRepetitionAnswer;
 import com.example.steplang.model.task.wordrepetition.WordRepetitionData;
@@ -42,7 +44,7 @@ public class WordRepetitionTaskService {
     private final UserLanguageRepository userLanguageRepo;
     private final LanguageTaskRepository languageTaskRepo;
     private final LevelingService levelingService;
-    public WordRepetitionData createWordRepetitionTask(Long userId, Long languageId){
+    public WordRepetitionData createWordRepetitionTask(Long userId, Long languageId, Long targetLanguageId){
         WordRepetitionData wordRepetitionData = new WordRepetitionData();
         wordRepetitionData.setCorrectlyAnswered(0L);
         List<WordRepetitionItem> wordRepetitionItemList = new ArrayList<>();
@@ -51,22 +53,26 @@ public class WordRepetitionTaskService {
         List<UserWordProgress> shuffled = new ArrayList<>(wordsList);
         wordsList.forEach(userWordProgress->{
             List<WordRepetitionAnswer> repetitionAnswers = new ArrayList<>();
-            repetitionAnswers.add(new WordRepetitionAnswer(userWordProgress.getWord().getTranslation(),true));
+            //List<WordForm> wordForms = userWordProgress.getWord().getForms().stream().filter(form-> form.getTranslations().stream().anyMatch(f-> f.getTargetLanguage().getId() == targetLangaugeId)).toList();
+            //System.out.println("wordForms");
+            //System.out.println(wordForms);
+            //System.out.println("wordForms2");
+            repetitionAnswers.add(new WordRepetitionAnswer(userWordProgress.getWordForm().getTranslations().stream().filter(f-> f.getTargetLanguage().getId() == targetLanguageId).findFirst().get().getTranslation() ,true));
             int extraBadAnswers = Math.min(wordsList.size(), 4);
             while(repetitionAnswers.size() < extraBadAnswers){
                 String badAnswer = null;
                 while(badAnswer == null) {
                     Collections.shuffle(shuffled);
-                    String newPossiblyAnswer = shuffled.get(0).getWord().getTranslation();
+                    String newPossiblyAnswer = shuffled.get(0).getWordForm().getTranslations().stream().filter(f-> f.getTargetLanguage().getId() == targetLanguageId).findFirst().get().getTranslation();
                     boolean exists = repetitionAnswers.stream()
                             .anyMatch(a -> a.getAnswer().equals(newPossiblyAnswer));
                     if(!exists)
-                        badAnswer = shuffled.get(0).getWord().getTranslation();
+                        badAnswer = shuffled.get(0).getWordForm().getTranslations().stream().filter(f-> f.getTargetLanguage().getId() == targetLanguageId).findFirst().get().getTranslation();
                 }
                 repetitionAnswers.add(new WordRepetitionAnswer(badAnswer,false));
             }
             Collections.shuffle(repetitionAnswers);
-            WordRepetitionItem wordRepetitionItem = new WordRepetitionItem(userWordProgress.getWord().getWord(),userWordProgress.getWord().getWordId(),false,repetitionAnswers);
+            WordRepetitionItem wordRepetitionItem = new WordRepetitionItem(userWordProgress.getWordForm().getForm(),userWordProgress.getWordForm().getId(),userWordProgress.getWordForm().getId(),false,repetitionAnswers);
             wordRepetitionItemList.add(wordRepetitionItem);
         });
         wordRepetitionData.setItemList(wordRepetitionItemList);

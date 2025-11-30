@@ -1,9 +1,6 @@
 package com.example.steplang.controllers.task;
 
-import com.example.steplang.commands.task.CreateWordRepetitionTaskCommand;
-import com.example.steplang.commands.task.GetArrangeWordsTaskStatusCommand;
-import com.example.steplang.commands.task.UserAnswerToArrangeWordsTaskCommand;
-import com.example.steplang.commands.task.UserAnswerToWordRepetitionTaskCommand;
+import com.example.steplang.commands.task.*;
 import com.example.steplang.mappers.task.TaskMapper;
 import com.example.steplang.model.task.LanguageTask;
 import com.example.steplang.model.task.WordRepetitionStatusInfo;
@@ -33,8 +30,8 @@ public class ArrangeWordsController {
     private final TaskMapper taskMapper;
     private final ArrangeWordsTaskService arrangeWordsTaskService;
     @PostMapping("/create")
-    public ResponseEntity<?> createArrangeWordsTask(@Valid @RequestBody CreateWordRepetitionTaskCommand command) throws JsonProcessingException {
-        LanguageTask languageTask = languageTaskService.createTask(jwtUtil.getUserAuthInfo().getId(),command.getLanguageId(), LanguageTaskType.ARRANGE_WORDS);
+    public ResponseEntity<?> createArrangeWordsTask(@Valid @RequestBody CreateArrangeWordsTaskCommand command) throws JsonProcessingException {
+        LanguageTask languageTask = languageTaskService.createTask(jwtUtil.getUserAuthInfo().getId(),command.getLanguageId(),command.getTargetLanguageId(), LanguageTaskType.ARRANGE_WORDS);
         System.out.println(languageTask.toString());
         return ResponseEntity.ok(taskMapper.toArrangeWordsTaskInfoDTO(languageTask));
     }

@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class CreateWordRepetitionTaskCommand {
+public class CreateArrangeWordsTaskCommand {
     @NotNull(message = "'languageId' is required")
     private Long languageId;
     @NotNull(message = "'targetLanguageId' is required")

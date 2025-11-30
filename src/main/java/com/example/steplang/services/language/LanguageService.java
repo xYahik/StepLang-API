@@ -1,20 +1,17 @@
 package com.example.steplang.services.language;
 
-import com.example.steplang.commands.language.AddCategoryToWordCommand;
-import com.example.steplang.commands.language.AddNewLanguageCommand;
-import com.example.steplang.commands.language.CreateNewCategoryCommand;
-import com.example.steplang.commands.language.CreateNewWordCommand;
+import com.example.steplang.commands.language.*;
 import com.example.steplang.dtos.language.LanguagePatchDTO;
 import com.example.steplang.dtos.language.WordCategoryPatchDTO;
 import com.example.steplang.dtos.language.WordPatchDTO;
-import com.example.steplang.entities.language.Language;
-import com.example.steplang.entities.language.Word;
-import com.example.steplang.entities.language.WordCategory;
+import com.example.steplang.entities.language.*;
 import com.example.steplang.errors.LanguageError;
 import com.example.steplang.exceptions.ApiException;
 import com.example.steplang.repositories.language.LanguageRepository;
 import com.example.steplang.repositories.language.WordCategoryRepository;
+import com.example.steplang.repositories.language.WordFormRepository;
 import com.example.steplang.repositories.language.WordRepository;
+import com.example.steplang.utils.enums.language.WordType;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,6 +25,7 @@ public class LanguageService {
     private final LanguageRepository languageRepo;
     private final WordRepository wordRepo;
     private final WordCategoryRepository wordCategoryRepo;
+    private final WordFormRepository wordFormRepo;
     @Transactional
     public Language addNewLanguage(AddNewLanguageCommand command){
         if(languageRepo.existsByName(command.getName())){
@@ -40,11 +38,11 @@ public class LanguageService {
 
     @Transactional
     public Word addNewWord(CreateNewWordCommand command){
-        if(wordRepo.existsByWord(command.getWord())){
-            throw new ApiException(LanguageError.ALREADY_EXISTS,String.format("Word '%s' already exists in database", command.getWord()));
+        if(wordRepo.existsByBaseForm(command.getBaseForm())){
+            throw new ApiException(LanguageError.ALREADY_EXISTS,String.format("Word '%s' already exists in database", command.getBaseForm()));
         }
         Language language = getLanguageById(command.getLanguageId());
-        Word word = new Word(language, command.getWord(), command.getTranslation());
+        Word word = new Word(language, command.getBaseForm(), command.getWordType());
         saveWord(word);
 
         return word;
@@ -94,7 +92,7 @@ public class LanguageService {
 
         word.AddCategory(category);
 
-        return String.format("Category '%s' added to word '%s'",category.getName(),word.getWord());
+        return String.format("Category '%s' added to word '%s'",category.getName(),word.getBaseForm());
     }
 
     public void addNewCategory(CreateNewCategoryCommand command) {
@@ -129,10 +127,8 @@ public class LanguageService {
         if(word == null)
             throw new ApiException(LanguageError.LANGUAGE_AND_WORD_ID_NOT_FOUND,String.format("Couldn't find word for languageId = %d and wordId = %d",id, wordId));
 
-        if(dto.getWord() != null)
-            word.setWord(dto.getWord());
-        if(dto.getTranslation() != null)
-            word.setTranslation(dto.getTranslation());
+        if(dto.getBaseForm() != null)
+            word.setBaseForm(dto.getBaseForm());
         if(dto.getReferenceLevel() != null)
             word.setReferenceLevel(dto.getReferenceLevel());
         if(dto.getImportanceLevel() != null)
@@ -199,5 +195,54 @@ public class LanguageService {
 
     public void deleteAllCategoriesByIds(List<Long> categoryIds) {
         wordCategoryRepo.deleteAllById(categoryIds);
+    }
+
+    public WordForm addNewWordForm(AddNewWordFormCommand command) {
+        Word word = wordRepo.findWordByLanguageIdAndWordId(command.getLanguageId(),command.getWordId()).orElse( null);
+        if(word == null){
+            throw new ApiException(LanguageError.WORD_ID_NOT_FOUND,String.format("Couldn't find word with wordId = '%d'", command.getWordId()));
+        }
+        switch(word.getWordType()){
+            case WordType.VERB ->{
+                if(command.getWordPerson() == null || command.getWordNumber() == null || command.getWordTense() == null )
+                    throw new ApiException(LanguageError.MISSING_KEY, String.format("Missing at least one of key: 'wordPerson', 'wordNumber', 'wordTense'"));
+            }
+            case WordType.ADJECTIVE ->{
+                if(command.getWordPerson() == null || command.getWordNumber() == null || command.getWordGender() == null)
+                    throw new ApiException(LanguageError.MISSING_KEY, String.format("Missing at least one of key: 'wordPerson', 'wordNumber', 'wordGender'"));
+            }
+            case WordType.NOUN ->{
+                if(command.getWordNumber() == null || command.getWordGender() == null)
+                    throw new ApiException(LanguageError.MISSING_KEY, String.format("Missing at least one of key: 'wordNumber', 'wordGender'"));
+            }
+        }
+
+        WordForm newWordForm = new WordForm(word,command.getForm(),command.getWordPerson(),command.getWordNumber(),command.getWordGender(),command.getWordTense());
+        word.getForms().add(newWordForm);
+        wordRepo.save(word);
+
+        return newWordForm;
+    }
+
+    public WordFormTranslation addNewWordFormTranslation(AddNewWordFormTranslationCommand command) {
+        Word word = wordRepo.findWordByLanguageIdAndWordId(command.getLanguageId(),command.getWordId()).orElse( null);
+        if(word == null){
+            throw new ApiException(LanguageError.WORD_ID_NOT_FOUND,String.format("Couldn't find word with wordId = '%d'", command.getWordId()));
+        }
+
+        Language targetLanguage = languageRepo.findById(command.getTargetLanguageId()).orElse(null);
+        if(targetLanguage == null){
+            throw new ApiException(LanguageError.LANGUAGE_ID_NOT_FOUND,String.format("Couldn't find targetLanguage with languageId = '%d'", command.getTargetLanguageId()));
+        }
+        WordForm wordForm = wordFormRepo.findById(command.getFormId()).orElse(null);
+        if(wordForm == null){
+            throw new ApiException(LanguageError.WORD_FORM_ID_NOT_FOUND,String.format("Couldn't find wordForm with formId = '%d'", command.getFormId()));
+        }
+        WordFormTranslation newWordFormTranslation = new WordFormTranslation(wordForm,targetLanguage,command.getTranslation());
+
+        wordForm.getTranslations().add(newWordFormTranslation);
+
+        wordRepo.save(word);
+        return newWordFormTranslation;
     }
 }
