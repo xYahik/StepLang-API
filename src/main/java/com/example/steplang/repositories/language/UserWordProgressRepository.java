@@ -26,7 +26,7 @@ public interface UserWordProgressRepository extends JpaRepository<UserWordProgre
     WHERE uwp.user_language_id = :userLanguageId
         AND (
             uwp.next_repetition_date IS NULL
-            OR CAST(uwp.next_repetition_date AS DATE) <= CURRENT_DATE
+            OR uwp.next_repetition_date <= CURRENT_TIMESTAMP
         )
     ORDER BY
         CAST(uwp.next_repetition_date AS DATE) ASC,
