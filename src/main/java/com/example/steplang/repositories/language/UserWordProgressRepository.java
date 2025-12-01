@@ -13,11 +13,11 @@ import java.util.Optional;
 
 @Repository
 public interface UserWordProgressRepository extends JpaRepository<UserWordProgress,Long> {
-    @Query("select uwp from UserWordProgress uwp where uwp.wordForm.word.id = ?1 and uwp.userLanguage = ?2")
-    Optional<UserWordProgress> findByWordIdAndUserLanguage(Long wordId, UserLanguage userLanguage);
+    @Query("select uwp from UserWordProgress uwp where uwp.wordForm.id = ?1 and uwp.userLanguage = ?2")
+    Optional<UserWordProgress> findByWordFormIdAndUserLanguage(Long wordFormId, UserLanguage userLanguage);
 
-    @Query("select (count(uwp) > 0) from UserWordProgress uwp where uwp.wordForm.word.id = ?1 and uwp.userLanguage = ?2")
-    boolean existsByWordIdAndUserLanguage(Long wordId, UserLanguage userLanguage);
+    @Query("select (count(uwp) > 0) from UserWordProgress uwp where uwp.wordForm.id = ?1 and uwp.userLanguage = ?2")
+    boolean existsByWordIdAndUserLanguage(Long wordFormId, UserLanguage userLanguage);
 
 
     @Query(value = """

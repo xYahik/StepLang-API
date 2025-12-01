@@ -78,13 +78,13 @@ public class UserController {
         return ResponseEntity.ok("");
     }
 
-    @GetMapping("/language/{languageId}/{wordId}")
-    public ResponseEntity<?> getUserLanguageWordInformation(@PathVariable Long languageId, @PathVariable Long wordId){
+    @GetMapping("/language/{languageId}/{wordId}/{formId}")
+    public ResponseEntity<?> getUserLanguageWordInformation(@PathVariable Long languageId, @PathVariable Long wordId, @PathVariable Long wordFormId){
         Long userId = jwtUtil.getUserAuthInfo().getId();
-        UserWordProgress userWordProgress = userService.getUserLanguageWord(userId,languageId,wordId);
+        UserWordProgress userWordProgress = userService.getUserLanguageWordForm(userId,languageId,wordId,wordFormId);
 
-        UserLanguageWordDTO dto = userMapper.toUserLanguageWordDto(userWordProgress);
-        return ResponseEntity.ok(dto);
+        //UserLanguageWordDTO dto = userMapper.toUserLanguageWordDto(userWordProgress);
+        return ResponseEntity.ok(userWordProgress);
     }
 
     @GetMapping("/leveling/update/{languageId}")

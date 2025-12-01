@@ -72,7 +72,7 @@ public class WordRepetitionTaskService {
                 repetitionAnswers.add(new WordRepetitionAnswer(badAnswer,false));
             }
             Collections.shuffle(repetitionAnswers);
-            WordRepetitionItem wordRepetitionItem = new WordRepetitionItem(userWordProgress.getWordForm().getForm(),userWordProgress.getWordForm().getId(),userWordProgress.getWordForm().getId(),false,repetitionAnswers);
+            WordRepetitionItem wordRepetitionItem = new WordRepetitionItem(userWordProgress.getWordForm().getForm(),userWordProgress.getWordForm().getWord().getWordId(),userWordProgress.getWordForm().getId(),false,repetitionAnswers);
             wordRepetitionItemList.add(wordRepetitionItem);
         });
         wordRepetitionData.setItemList(wordRepetitionItemList);
@@ -104,7 +104,7 @@ public class WordRepetitionTaskService {
 
 
 
-        UserWordProgress userWordProgress = userService.getUserLanguageWord(languageTask.getUserId(), languageTask.getLanguageId(),taskItem.getWordId() );
+        UserWordProgress userWordProgress = userService.getUserLanguageWordForm(languageTask.getUserId(), languageTask.getLanguageId(),taskItem.getWordId(),taskItem.getFormId() );
         System.out.println(String.format("Test %d %d", taskItem.getWordId(), userWordProgress.getId()));
         if(taskItem.getPossibleAnswers().get(Math.toIntExact(command.getAnswerId())).isTrueAnswer()){
             //CorrectAnswer

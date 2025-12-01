@@ -73,13 +73,13 @@ public class UserService {
         //if(word == null)
         //    throw new ApiException(UserLanguageError.LANGUAGE_AND_WORD_ID_NOT_FOUND,String.format("Word with wordId = '%d' and languageId = '%d' not found",command.getWordId(),languageId));
 
-        WordForm wordForm = wordFormRepo.findById(command.getFormId()).orElse(null);
+        WordForm wordForm = wordFormRepo.findById(command.getWordFormId()).orElse(null);
         if(wordForm == null){
-            throw new ApiException(LanguageError.WORD_FORM_ID_NOT_FOUND,String.format("Couldn't find wordForm with formId = '%d'", command.getFormId()));
+            throw new ApiException(LanguageError.WORD_FORM_ID_NOT_FOUND,String.format("Couldn't find wordForm with formId = '%d'", command.getWordFormId()));
         }
 
-        if(userWordProgressRepo.existsByWordIdAndUserLanguage(command.getWordId(),userLanguage))
-            throw new ApiException(UserLanguageError.USER_ALREADY_LEARNING_WORD,String.format("User already learning word with wordId = '%d' and languageId = '%d' not found",command.getWordId(),languageId));
+        if(userWordProgressRepo.existsByWordIdAndUserLanguage(command.getWordFormId(),userLanguage))
+            throw new ApiException(UserLanguageError.USER_ALREADY_LEARNING_WORD,String.format("User already learning word with wordFormId = '%d' and languageId = '%d' not found",command.getWordFormId(),languageId));
 
         UnderstandingLevel understandingLevel = command.getUnderstandingLevel();
         Long understandingProgress = command.getUnderstandingProgress();
@@ -89,7 +89,7 @@ public class UserService {
         userWordProgressRepo.save(userWordProgress);
     }
 
-    public UserWordProgress getUserLanguageWord(Long userId, Long languageId, Long wordId) {
+    public UserWordProgress getUserLanguageWordForm(Long userId, Long languageId,Long wordId, Long wordFormId) {
         User user = userRepo.findById(userId).orElse(null);
         if(user == null)
             throw new ApiException(UserLanguageError.USER_NOT_FOUND,String.format("User with id = '%d' not found",userId));
@@ -98,10 +98,18 @@ public class UserService {
         if(userLanguage == null)
             throw new ApiException(UserLanguageError.USER_NOT_LEARNING_LANGUAGE,String.format("User withId = '%d' is not learning language with languageId ='%d'",userId,languageId));
 
-        UserWordProgress userWordProgress = userWordProgressRepo.findByWordIdAndUserLanguage(wordId,userLanguage).orElse(null);
+        Word word = wordRepository.findWordByLanguageIdAndWordId(languageId,wordId).orElse(null);
+        if(word == null)
+            throw new ApiException(LanguageError.WORD_ID_NOT_FOUND, String.format("Couldn't find word with id ='%d' for language with id = '%d",wordId,languageId));
+
+        if(word.getForms().stream().filter(f-> f.getId() == wordFormId).findFirst().orElse(null) == null){
+            throw new ApiException(LanguageError.WORD_FORM_ID_NOT_FOUND, String.format("Couldn't find form with id = '%d' for word with id ='%d",wordFormId,wordId));
+        }
+
+        UserWordProgress userWordProgress = userWordProgressRepo.findByWordFormIdAndUserLanguage(wordFormId,userLanguage).orElse(null);
 
         if(userWordProgress == null)
-            throw new ApiException(UserLanguageError.USER_NOT_LEARNING_WORD,String.format("User is not learning word withId ='%d' and languageId = '%d'",wordId,languageId));
+            throw new ApiException(UserLanguageError.USER_NOT_LEARNING_WORD,String.format("User is not learning word in form with wordFormId ='%d' and languageId = '%d'",wordFormId,languageId));
 
         return userWordProgress;
     }

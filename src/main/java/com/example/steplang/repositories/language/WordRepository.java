@@ -19,7 +19,7 @@ public interface WordRepository extends JpaRepository<Word,Long> {
     Optional<Long> findMaxWordIdByLanguage(@Param("languageId") Long languageId);
 
     @Query("SELECT w FROM Word w where w.language.id = :languageId AND w.wordId = :wordId")
-    Optional<Word> findWordByLanguageIdAndWordId(@Param("languageId") Long languageId, @Param("wordId") Long wordId);
+    Optional<Word>  findWordByLanguageIdAndWordId(@Param("languageId") Long languageId, @Param("wordId") Long wordId);
 
     @Query("SELECT COUNT(w) > 0 FROM Word w where w.language.id = :languageId AND w.wordId = :wordId")
     boolean existsByLanguageIdAndWordId(@Param("languageId")Long languageId, @Param("wordId") Long wordId);

@@ -8,11 +8,8 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class AddUserLanguageWordCommand {
-
-    @NotNull(message = "'wordId' is required")
-    private Long wordId;
-    @NotNull(message = "'wordId' is required")
-    private Long formId;
+    @NotNull(message = "'wordFormId' is required")
+    private Long wordFormId;
 
     private UnderstandingLevel understandingLevel;
     private Long understandingProgress;
