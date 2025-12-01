@@ -41,7 +41,7 @@ public interface UserWordProgressRepository extends JpaRepository<UserWordProgre
     List<UserWordProgress> find10MostNeededRepetition(@Param("userLanguageId") Long userLanguageId);
 
     @Query( value = """
-            SELECT w.word.baseForm
+            SELECT w.form
             FROM UserWordProgress uwp
             JOIN uwp.wordForm w
             WHERE uwp.userLanguage.id = :userLanguageId

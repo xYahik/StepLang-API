@@ -26,7 +26,7 @@ public class WordRepetitionController {
     @PostMapping("/create")
     public ResponseEntity<?> createWordRepetitionTask(@Valid @RequestBody CreateWordRepetitionTaskCommand command){
         LanguageTask languageTask = languageTaskService.createTask(jwtUtil.getUserAuthInfo().getId(),command.getLanguageId(),command.getTargetLanguageId(),LanguageTaskType.WORD_REPETITION);
-        return ResponseEntity.ok(/*taskMapper.toWordRepetitionTaskInfoDTO(languageTask)*/languageTask);
+        return ResponseEntity.ok(taskMapper.toWordRepetitionTaskInfoDTO(languageTask));
     }
 
     @PostMapping("/answer")
