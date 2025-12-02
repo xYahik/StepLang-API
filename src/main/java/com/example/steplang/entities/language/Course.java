@@ -17,12 +17,27 @@ public class Course {
     private Long id;
 
     @ManyToOne
-    private Language learningLanguageId;
+    private Language learningLanguage;
     @ManyToOne
-    private Language nativeLanguageId;
+    private Language nativeLanguage;
 
     private String name;
 
-    @OneToMany(mappedBy = "course")
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     List<CourseModule> modules;
+
+    public Course(String name, Language learningLanguage, Language nativeLanguage){
+        this.name = name;
+        this.learningLanguage = learningLanguage;
+        this.nativeLanguage = nativeLanguage;
+    }
+
+    public void addModule(CourseModule module){
+        module.setCourse(this);
+        modules.add(module);
+    }
+    public void removeModule(CourseModule module){
+        module.setCourse(null);
+        modules.remove(module);
+    }
 }

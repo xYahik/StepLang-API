@@ -16,7 +16,7 @@ public class CourseModule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne()
     private Course course;
 
     private Integer moduleId;
@@ -24,4 +24,19 @@ public class CourseModule {
 
     @OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CourseSubModule> subModuleList;
+
+    public CourseModule(Integer moduleId, String moduleName){
+        this.moduleId = moduleId;
+        this.moduleName = moduleName;
+    }
+
+    public void addSubModule(CourseSubModule subModule){
+        subModule.setModule(this);
+        subModuleList.add(subModule);
+
+    }
+    public void removeSubModule(CourseSubModule subModule){
+        subModule.setModule(null);
+        subModuleList.remove(subModule);
+    }
 }
