@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -23,20 +24,21 @@ public class CourseModule {
     private String moduleName;
 
     @OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CourseSubModule> subModuleList;
+    private List<CourseSubModule> subModules;
 
     public CourseModule(Integer moduleId, String moduleName){
         this.moduleId = moduleId;
         this.moduleName = moduleName;
+        this.subModules = new ArrayList<>();
     }
 
     public void addSubModule(CourseSubModule subModule){
         subModule.setModule(this);
-        subModuleList.add(subModule);
+        subModules.add(subModule);
 
     }
     public void removeSubModule(CourseSubModule subModule){
         subModule.setModule(null);
-        subModuleList.remove(subModule);
+        subModules.remove(subModule);
     }
 }

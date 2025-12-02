@@ -34,6 +34,7 @@ public class CourseSubModule {
         actions = new ArrayList<>();
         this.subModuleId = subModuleId;
         this.subModuleName = subModuleName;
+
     }
 
     public void addAction(CourseActionBase action){

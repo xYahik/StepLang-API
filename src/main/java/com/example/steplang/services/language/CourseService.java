@@ -62,7 +62,13 @@ public class CourseService {
         CourseModule courseModule = new CourseModule(command.getModuleId(),command.getModuleName());
         course.addModule(courseModule);
         courseRepo.save(course);
-        return courseModule;
+
+        CourseModule savedModule = course.getModules()
+                .stream()
+                .filter(m -> m.getModuleId().equals(courseModule.getModuleId()))
+                .findFirst()
+                .orElseThrow();
+        return savedModule;
     }
     @Transactional
     public CourseSubModule addNewSubModuleToCourse(AddCourseSubModuleCommand command) {
@@ -82,7 +88,13 @@ public class CourseService {
         CourseSubModule courseSubModule = new CourseSubModule(command.getSubModuleId(),command.getSubModuleName());
         courseModule.addSubModule(courseSubModule);
         courseModuleRepo.save(courseModule);
-        return courseSubModule;
+
+        CourseSubModule savedSubModule = courseModule.getSubModules()
+                .stream()
+                .filter(m -> m.getSubModuleId().equals(courseSubModule.getSubModuleId()))
+                .findFirst()
+                .orElseThrow();
+        return savedSubModule;
     }
 
     public CourseActionBase addNewActionToSubModule(AddCourseActionCommand command) {

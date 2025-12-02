@@ -7,6 +7,7 @@ import com.example.steplang.commands.language.AddCourseSubModuleCommand;
 import com.example.steplang.entities.language.Course;
 import com.example.steplang.entities.language.CourseModule;
 import com.example.steplang.entities.language.CourseSubModule;
+import com.example.steplang.mappers.CourseMapper;
 import com.example.steplang.model.course.CourseActionBase;
 import com.example.steplang.services.language.CourseService;
 import jakarta.validation.Valid;
@@ -21,19 +22,19 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class CourseController {
     private final CourseService courseService;
-
+    private final CourseMapper courseMapper;
     @PostMapping("/add")
     public ResponseEntity<?> addNewCourse(@Valid @RequestBody AddCourseCommand command){
         Course course = courseService.addNewCourse(command);
         //need dto to not loop langauges in response
-        return ResponseEntity.ok(course);
+        return ResponseEntity.ok(courseMapper.courseToDTO(course));
     }
 
     @PostMapping("/{courseId}/add")
     public ResponseEntity<?> addNewModuleToCourse(@PathVariable Long courseId, @Valid @RequestBody AddCourseModuleCommand command){
         command.setCourseId(courseId);
         CourseModule courseModule = courseService.addNewModuleToCourse(command);
-        return ResponseEntity.ok(courseModule);
+        return ResponseEntity.ok(courseMapper.courseModelToDTO(courseModule));
     }
 
     @PostMapping("/{courseId}/{moduleId}/add")
@@ -41,7 +42,7 @@ public class CourseController {
         command.setCourseId(courseId);
         command.setModuleId(moduleId);
         CourseSubModule courseSubModule = courseService.addNewSubModuleToCourse(command);
-        return ResponseEntity.ok(courseSubModule);
+        return ResponseEntity.ok(courseMapper.courseSubModelToDTO(courseSubModule));
     }
 
     /*@GetMapping("{courseId}")

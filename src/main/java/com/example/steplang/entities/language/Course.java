@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -30,6 +31,7 @@ public class Course {
         this.name = name;
         this.learningLanguage = learningLanguage;
         this.nativeLanguage = nativeLanguage;
+        this.modules = new ArrayList<>();
     }
 
     public void addModule(CourseModule module){
