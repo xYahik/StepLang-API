@@ -21,7 +21,7 @@ public interface CourseMapper {
     List<CourseDTO> courseToDTOList(List<Course> courses);
 
     @Mapping(source = "course.id", target = "courseId")
-    CourseModuleDTO courseModelToDTO(CourseModule module);
+    CourseModuleDTO courseModuleToDTO(CourseModule module);
 
     List<CourseModuleDTO> courseModuleToDTOList(List<CourseModule> modules);
 

@@ -20,6 +20,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
+
 @Service
 @RequiredArgsConstructor
 public class CourseService {
@@ -106,7 +108,7 @@ public class CourseService {
         if(courseModule == null){
             throw new ApiException(LanguageError.COURSE_MODULE_ID_NOT_FOUND,String.format("Couldn't find Module with moduleId = '%d' and courseId = '%d'", command.getModuleId(),command.getCourseId()));
         }
-        CourseSubModule courseSubModule = courseSubModuleRepo.findBySubModuleIdAndModule(command.getModuleId(),courseModule).orElse(null);
+        CourseSubModule courseSubModule = courseSubModuleRepo.findBySubModuleIdAndModule(command.getSubModuleId(),courseModule).orElse(null);
         if(courseSubModule == null){
             throw new ApiException(LanguageError.COURSE_SUBMODULE_ID_NOT_FOUND,String.format("Couldn't find SubModule with subModuleId = '%d' for moduleId ='%d' and courseId = '%d'", command.getSubModuleId(),command.getModuleId(),command.getCourseId()));
         }
@@ -116,5 +118,68 @@ public class CourseService {
         courseSubModuleRepo.save(courseSubModule);
         return courseAction;
 
+    }
+
+    public Course getCourse(Long courseId) {
+        Course course = courseRepo.findById(courseId).orElse(null);
+        if(course == null){
+            throw new ApiException(LanguageError.COURSE_ID_NOT_FOUND,String.format("Couldn't find Course with courseId = '%d'",courseId));
+        }
+        return course;
+    }
+
+    public CourseModule getCourseModule(Long courseId, Integer moduleId) {
+        Course course = courseRepo.findById(courseId).orElse(null);
+        if(course == null){
+            throw new ApiException(LanguageError.COURSE_ID_NOT_FOUND,String.format("Couldn't find Course with courseId = '%d'", courseId));
+        }
+        CourseModule courseModule = courseModuleRepo.findByModuleIdAndCourseId(moduleId,courseId).orElse(null);
+        if(courseModule == null){
+            throw new ApiException(LanguageError.COURSE_MODULE_ID_NOT_FOUND,String.format("Couldn't find Module with moduleId = '%d' and courseId = '%d'", moduleId,courseId));
+        }
+
+        return courseModule;
+    }
+
+    public CourseSubModule getCourseSubModule(Long courseId, Integer moduleId, Integer subModuleId) {
+
+        Course course = courseRepo.findById(courseId).orElse(null);
+        if(course == null){
+            throw new ApiException(LanguageError.COURSE_ID_NOT_FOUND,String.format("Couldn't find Course with courseId = '%d'", courseId));
+        }
+        CourseModule courseModule = courseModuleRepo.findByModuleIdAndCourseId(moduleId,courseId).orElse(null);
+        if(courseModule == null){
+            throw new ApiException(LanguageError.COURSE_MODULE_ID_NOT_FOUND,String.format("Couldn't find Module with moduleId = '%d' and courseId = '%d'", moduleId,courseId));
+        }
+
+        CourseSubModule courseSubModule = courseSubModuleRepo.findBySubModuleIdAndModule(subModuleId,courseModule).orElse(null);
+        if(courseSubModule == null){
+            throw new ApiException(LanguageError.COURSE_SUBMODULE_ID_NOT_FOUND,String.format("Couldn't find SubModule with subModuleId = '%d' for moduleId ='%d' and courseId = '%d'",subModuleId,moduleId,courseId));
+        }
+
+        return courseSubModule;
+    }
+
+    public CourseActionBase getCourseAction(Long courseId, Integer moduleId, Integer subModuleId, String actionId) {
+
+        Course course = courseRepo.findById(courseId).orElse(null);
+        if(course == null){
+            throw new ApiException(LanguageError.COURSE_ID_NOT_FOUND,String.format("Couldn't find Course with courseId = '%d'", courseId));
+        }
+        CourseModule courseModule = courseModuleRepo.findByModuleIdAndCourseId(moduleId,courseId).orElse(null);
+        if(courseModule == null){
+            throw new ApiException(LanguageError.COURSE_MODULE_ID_NOT_FOUND,String.format("Couldn't find Module with moduleId = '%d' and courseId = '%d'", moduleId,courseId));
+        }
+
+        CourseSubModule courseSubModule = courseSubModuleRepo.findBySubModuleIdAndModule(subModuleId,courseModule).orElse(null);
+        if(courseSubModule == null){
+            throw new ApiException(LanguageError.COURSE_SUBMODULE_ID_NOT_FOUND,String.format("Couldn't find SubModule with subModuleId = '%d' for moduleId ='%d' and courseId = '%d'",subModuleId,moduleId,courseId));
+        }
+
+        CourseActionBase courseAction = courseSubModule.getActions().stream().filter(action -> Objects.equals(action.getId(), actionId)).findFirst().orElse(null);
+        if(courseAction == null){
+            throw new ApiException(LanguageError.COURSE_ACTION_ID_NOT_FOUND,String.format("Couldn't find Course Action with actionId ='%s' for moduleId ='%d' and courseId = '%d' and subModule with subModuleId = '%d' ",actionId,moduleId,courseId, subModuleId));
+        }
+        return courseAction;
     }
 }

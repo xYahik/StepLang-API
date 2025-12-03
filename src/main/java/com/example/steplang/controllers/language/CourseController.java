@@ -12,7 +12,6 @@ import com.example.steplang.model.course.CourseActionBase;
 import com.example.steplang.services.language.CourseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,15 +25,14 @@ public class CourseController {
     @PostMapping("/add")
     public ResponseEntity<?> addNewCourse(@Valid @RequestBody AddCourseCommand command){
         Course course = courseService.addNewCourse(command);
-        //need dto to not loop langauges in response
-        return ResponseEntity.ok(courseMapper.courseToDTO(course));
+        return ResponseEntity.status(201).body(courseMapper.courseToDTO(course));
     }
 
     @PostMapping("/{courseId}/add")
     public ResponseEntity<?> addNewModuleToCourse(@PathVariable Long courseId, @Valid @RequestBody AddCourseModuleCommand command){
         command.setCourseId(courseId);
         CourseModule courseModule = courseService.addNewModuleToCourse(command);
-        return ResponseEntity.ok(courseMapper.courseModelToDTO(courseModule));
+        return ResponseEntity.status(201).body(courseMapper.courseModuleToDTO(courseModule));
     }
 
     @PostMapping("/{courseId}/{moduleId}/add")
@@ -42,12 +40,25 @@ public class CourseController {
         command.setCourseId(courseId);
         command.setModuleId(moduleId);
         CourseSubModule courseSubModule = courseService.addNewSubModuleToCourse(command);
-        return ResponseEntity.ok(courseMapper.courseSubModelToDTO(courseSubModule));
+        return ResponseEntity.status(201).body(courseMapper.courseSubModelToDTO(courseSubModule));
     }
 
-    /*@GetMapping("{courseId}")
+    @GetMapping("{courseId}")
+    public ResponseEntity<?> getCourse(@PathVariable Long courseId){
+        Course course = courseService.getCourse(courseId);
+        return ResponseEntity.ok(courseMapper.courseToDTO(course));
+    }
     @GetMapping("{courseId}/{moduleId}")
-    @GetMapping("{courseId}/{moduleId}/{subModuleId}")*/
+    public ResponseEntity<?> getCourseModule(@PathVariable Long courseId, @PathVariable Integer moduleId){
+        CourseModule courseModule = courseService.getCourseModule(courseId,moduleId);
+        return ResponseEntity.ok(courseMapper.courseModuleToDTO(courseModule));
+    }
+
+    @GetMapping("{courseId}/{moduleId}/{subModuleId}")
+    public ResponseEntity<?> getCourseSubModule(@PathVariable Long courseId, @PathVariable Integer moduleId, @PathVariable Integer subModuleId){
+        CourseSubModule courseSubModule = courseService.getCourseSubModule(courseId,moduleId,subModuleId);
+        return ResponseEntity.ok(courseMapper.courseSubModelToDTO(courseSubModule));
+    }
 
     @PostMapping("{courseId}/{moduleId}/{subModuleId}/action/add")
     public ResponseEntity<?> addNewActionToSubModule(@PathVariable Long courseId, @PathVariable Integer moduleId, @PathVariable Integer subModuleId, @Valid @RequestBody AddCourseActionCommand command){
@@ -55,10 +66,13 @@ public class CourseController {
         command.setModuleId(moduleId);
         command.setSubModuleId(subModuleId);
         CourseActionBase action = courseService.addNewActionToSubModule(command);
-        return ResponseEntity.ok(action);
+        return ResponseEntity.status(201).body(action);
     }
 
-    /*@GetMapping("{courseId}/{moduleId}/{subModuleId}/{actionId}")*/
-
+    @GetMapping("{courseId}/{moduleId}/{subModuleId}/{actionId}")
+    public ResponseEntity<?> getCourseAction(@PathVariable Long courseId, @PathVariable Integer moduleId, @PathVariable Integer subModuleId, @PathVariable String actionId){
+        CourseActionBase courseAction = courseService.getCourseAction(courseId,moduleId,subModuleId,actionId);
+        return ResponseEntity.ok(courseAction);
+    }
 
 }
