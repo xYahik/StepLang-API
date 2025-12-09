@@ -1,12 +1,11 @@
 package com.example.steplang.controllers.language;
 
-import com.example.steplang.commands.language.AddCourseActionCommand;
-import com.example.steplang.commands.language.AddCourseCommand;
-import com.example.steplang.commands.language.AddCourseModuleCommand;
-import com.example.steplang.commands.language.AddCourseSubModuleCommand;
+import com.example.steplang.commands.language.*;
 import com.example.steplang.entities.language.Course;
 import com.example.steplang.entities.language.CourseModule;
 import com.example.steplang.entities.language.CourseSubModule;
+import com.example.steplang.errors.LanguageError;
+import com.example.steplang.exceptions.ApiException;
 import com.example.steplang.mappers.CourseMapper;
 import com.example.steplang.model.course.CourseActionBase;
 import com.example.steplang.services.language.CourseService;
@@ -65,7 +64,13 @@ public class CourseController {
         command.setCourseId(courseId);
         command.setModuleId(moduleId);
         command.setSubModuleId(subModuleId);
-        CourseActionBase action = courseService.addNewActionToSubModule(command);
+
+        CourseActionBase action;
+        switch (command.getActionType()) {
+            case INFORMATION -> action = courseService.addNewActionInformation((AddCourseActionInformationCommand)command);
+            case CHOOSE_WORD_WITH_IMAGE -> action = courseService.addNewActionChooseWordWithImage((AddCourseActionChooseWordWithImageCommand)command);
+            default -> throw new ApiException(LanguageError.COURSE_ACTION_ID_NOT_FOUND,"Unknown action type: " + command.getActionType());
+        }
         return ResponseEntity.status(201).body(action);
     }
 

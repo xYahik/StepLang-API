@@ -11,11 +11,11 @@ import java.util.UUID;
         property = "type"
 )
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = CourseActionInformation.class, name = "Information"),
-        @JsonSubTypes.Type(value = CourseActionWordRepetition.class, name = "WordRepetition")
+        @JsonSubTypes.Type(value = CourseActionInformation.class, name = "INFORMATION"),
+        @JsonSubTypes.Type(value = CourseActionChooseWordWithImage.class, name = "CHOOSE_WORD_WITH_IMAGE"),
 })
 public abstract class CourseActionBase {
-    private String id = UUID.randomUUID().toString();
+    private final String id = UUID.randomUUID().toString();
     public String getId() {
         return id;
     }

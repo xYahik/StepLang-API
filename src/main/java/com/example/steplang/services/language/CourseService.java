@@ -1,9 +1,6 @@
 package com.example.steplang.services.language;
 
-import com.example.steplang.commands.language.AddCourseActionCommand;
-import com.example.steplang.commands.language.AddCourseCommand;
-import com.example.steplang.commands.language.AddCourseModuleCommand;
-import com.example.steplang.commands.language.AddCourseSubModuleCommand;
+import com.example.steplang.commands.language.*;
 import com.example.steplang.entities.language.Course;
 import com.example.steplang.entities.language.CourseModule;
 import com.example.steplang.entities.language.CourseSubModule;
@@ -11,6 +8,7 @@ import com.example.steplang.entities.language.Language;
 import com.example.steplang.errors.LanguageError;
 import com.example.steplang.exceptions.ApiException;
 import com.example.steplang.model.course.CourseActionBase;
+import com.example.steplang.model.course.CourseActionChooseWordWithImage;
 import com.example.steplang.model.course.CourseActionInformation;
 import com.example.steplang.repositories.language.CourseModuleRepository;
 import com.example.steplang.repositories.language.CourseRepository;
@@ -180,6 +178,47 @@ public class CourseService {
         if(courseAction == null){
             throw new ApiException(LanguageError.COURSE_ACTION_ID_NOT_FOUND,String.format("Couldn't find Course Action with actionId ='%s' for moduleId ='%d' and courseId = '%d' and subModule with subModuleId = '%d' ",actionId,moduleId,courseId, subModuleId));
         }
+        return courseAction;
+    }
+
+    public CourseActionBase addNewActionInformation(AddCourseActionInformationCommand command) {
+
+        Course course = courseRepo.findById(command.getCourseId()).orElse(null);
+        if(course == null){
+            throw new ApiException(LanguageError.COURSE_ID_NOT_FOUND,String.format("Couldn't find Course with courseId = '%d'", command.getCourseId()));
+        }
+        CourseModule courseModule = courseModuleRepo.findByModuleIdAndCourseId(command.getModuleId(),command.getCourseId()).orElse(null);
+        if(courseModule == null){
+            throw new ApiException(LanguageError.COURSE_MODULE_ID_NOT_FOUND,String.format("Couldn't find Module with moduleId = '%d' and courseId = '%d'", command.getModuleId(),command.getCourseId()));
+        }
+        CourseSubModule courseSubModule = courseSubModuleRepo.findBySubModuleIdAndModule(command.getSubModuleId(),courseModule).orElse(null);
+        if(courseSubModule == null){
+            throw new ApiException(LanguageError.COURSE_SUBMODULE_ID_NOT_FOUND,String.format("Couldn't find SubModule with subModuleId = '%d' for moduleId ='%d' and courseId = '%d'", command.getSubModuleId(),command.getModuleId(),command.getCourseId()));
+        }
+
+        CourseActionInformation courseAction = new CourseActionInformation(command.getBody());
+        courseSubModule.addAction(courseAction);
+        courseSubModuleRepo.save(courseSubModule);
+        return courseAction;
+    }
+
+    public CourseActionBase addNewActionChooseWordWithImage(AddCourseActionChooseWordWithImageCommand command) {
+        Course course = courseRepo.findById(command.getCourseId()).orElse(null);
+        if(course == null){
+            throw new ApiException(LanguageError.COURSE_ID_NOT_FOUND,String.format("Couldn't find Course with courseId = '%d'", command.getCourseId()));
+        }
+        CourseModule courseModule = courseModuleRepo.findByModuleIdAndCourseId(command.getModuleId(),command.getCourseId()).orElse(null);
+        if(courseModule == null){
+            throw new ApiException(LanguageError.COURSE_MODULE_ID_NOT_FOUND,String.format("Couldn't find Module with moduleId = '%d' and courseId = '%d'", command.getModuleId(),command.getCourseId()));
+        }
+        CourseSubModule courseSubModule = courseSubModuleRepo.findBySubModuleIdAndModule(command.getSubModuleId(),courseModule).orElse(null);
+        if(courseSubModule == null){
+            throw new ApiException(LanguageError.COURSE_SUBMODULE_ID_NOT_FOUND,String.format("Couldn't find SubModule with subModuleId = '%d' for moduleId ='%d' and courseId = '%d'", command.getSubModuleId(),command.getModuleId(),command.getCourseId()));
+        }
+
+        CourseActionChooseWordWithImage courseAction = new CourseActionChooseWordWithImage(command.getChosenWordId(),command.getExtraWordsId());
+        courseSubModule.addAction(courseAction);
+        courseSubModuleRepo.save(courseSubModule);
         return courseAction;
     }
 }
