@@ -6,6 +6,7 @@ import com.example.steplang.commands.task.UserAnswerToWordRepetitionTaskCommand;
 import com.example.steplang.model.task.LanguageTask;
 import com.example.steplang.mappers.task.TaskMapper;
 import com.example.steplang.model.task.WordRepetitionStatusInfo;
+import com.example.steplang.repositories.language.WordRepository;
 import com.example.steplang.services.task.LanguageTaskService;
 import com.example.steplang.services.task.WordRepetitionTaskService;
 import com.example.steplang.utils.JwtUtil;
@@ -23,10 +24,12 @@ public class WordRepetitionController {
     private final TaskMapper taskMapper;
     private final JwtUtil jwtUtil;
     private final WordRepetitionTaskService wordRepetitionTaskService;
+    private final WordRepository wordRepository;
     @PostMapping("/create")
     public ResponseEntity<?> createWordRepetitionTask(@Valid @RequestBody CreateWordRepetitionTaskCommand command){
         LanguageTask languageTask = languageTaskService.createTask(jwtUtil.getUserAuthInfo().getId(),command.getLanguageId(),command.getTargetLanguageId(),LanguageTaskType.WORD_REPETITION);
-        return ResponseEntity.ok(taskMapper.toWordRepetitionTaskInfoDTO(languageTask));
+
+        return ResponseEntity.ok(taskMapper.toWordRepetitionTaskInfoDTO(languageTask,wordRepository));
     }
 
     @PostMapping("/answer")

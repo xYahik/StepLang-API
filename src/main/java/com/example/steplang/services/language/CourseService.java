@@ -14,10 +14,12 @@ import com.example.steplang.repositories.language.CourseModuleRepository;
 import com.example.steplang.repositories.language.CourseRepository;
 import com.example.steplang.repositories.language.CourseSubModuleRepository;
 import com.example.steplang.repositories.language.LanguageRepository;
+import com.example.steplang.services.task.CourseTaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -27,7 +29,6 @@ public class CourseService {
     private final LanguageRepository languageRepo;
     private final CourseModuleRepository courseModuleRepo;
     private final CourseSubModuleRepository courseSubModuleRepo;
-
     @Transactional
     public Course addNewCourse(AddCourseCommand command) {
         Language learningLanguage = languageRepo.findById(command.getLearningLanguageId()).orElse(null);
@@ -158,7 +159,7 @@ public class CourseService {
         return courseSubModule;
     }
 
-    public CourseActionBase getCourseAction(Long courseId, Integer moduleId, Integer subModuleId, String actionId) {
+    public CourseActionBase getCourseActionByActionID(Long courseId, Integer moduleId, Integer subModuleId, String actionId) {
 
         Course course = courseRepo.findById(courseId).orElse(null);
         if(course == null){
@@ -220,5 +221,33 @@ public class CourseService {
         courseSubModule.addAction(courseAction);
         courseSubModuleRepo.save(courseSubModule);
         return courseAction;
+    }
+
+    public CourseActionBase getCourseActionByIndex(Long courseId, Integer moduleId, Integer subModuleId, Integer actionIndex) {
+
+        Course course = courseRepo.findById(courseId).orElse(null);
+        if(course == null){
+            throw new ApiException(LanguageError.COURSE_ID_NOT_FOUND,String.format("Couldn't find Course with courseId = '%d'", courseId));
+        }
+        CourseModule courseModule = courseModuleRepo.findByModuleIdAndCourseId(moduleId,courseId).orElse(null);
+        if(courseModule == null){
+            throw new ApiException(LanguageError.COURSE_MODULE_ID_NOT_FOUND,String.format("Couldn't find Module with moduleId = '%d' and courseId = '%d'", moduleId,courseId));
+        }
+        CourseSubModule courseSubModule = courseSubModuleRepo.findBySubModuleIdAndModule(subModuleId,courseModule).orElse(null);
+        if(courseSubModule == null){
+            throw new ApiException(LanguageError.COURSE_SUBMODULE_ID_NOT_FOUND,String.format("Couldn't find SubModule with subModuleId = '%d' for moduleId ='%d' and courseId = '%d'", subModuleId,moduleId,courseId));
+        }
+
+        if(courseSubModule.getActions().isEmpty() || actionIndex >= courseSubModule.getActions().size() || actionIndex < 0) {
+            throw new ApiException(LanguageError.COURSE_ACTION_INDEX_NOT_FOUND,String.format("Couldn't find Course Action with actionIndex ='%d' for moduleId ='%d' and courseId = '%d' and subModule with subModuleId = '%d' ",actionIndex,moduleId,courseId, subModuleId));
+        }
+
+        CourseActionBase courseAction = courseSubModule.getActions().get(actionIndex);
+        return courseAction;
+    }
+
+    public List<Course> getCourses(Long learningLanguageId, Long nativeLanguageId) {
+        List<Course> courses = courseRepo.findByLearningLanguageIdAndNativeLanguageId(learningLanguageId,nativeLanguageId);
+        return courses;
     }
 }
