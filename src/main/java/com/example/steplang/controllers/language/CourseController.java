@@ -102,23 +102,15 @@ public class CourseController {
         return ResponseEntity.ok(courseAction);
     }
 
+
     @PostMapping("{courseId}/{moduleId}/{subModuleId}/action/task/create")
-    public ResponseEntity<?> createNewActionTask(@PathVariable Long courseId, @PathVariable Integer moduleId, @PathVariable Integer subModuleId, @Valid @RequestBody AddCourseActionCommand command){
+    public ResponseEntity<?> createNewActionTask(@PathVariable Long courseId, @PathVariable Integer moduleId, @PathVariable Integer subModuleId, @Valid @RequestBody CreateCourseActionTaskCommand command){
         command.setCourseId(courseId);
         command.setModuleId(moduleId);
         command.setSubModuleId(subModuleId);
 
-        LanguageTask task;
-        switch (command.getActionType()) {
-            case CHOOSE_WORD_WITH_IMAGE -> {
-                CourseActionChooseWordWithImage courseActionChooseWordWithImage = new CourseActionChooseWordWithImage();
-                courseActionChooseWordWithImage.setChosenWordId(((AddCourseActionChooseWordWithImageCommand)command).getChosenWordId());
-                courseActionChooseWordWithImage.setExtraWordsId(((AddCourseActionChooseWordWithImageCommand)command).getExtraWordsId());
-                task = courseTaskService.createChooseWordWithImageTask(jwtUtil.getUserAuthInfo().getId(),courseService.getCourse(courseId),courseActionChooseWordWithImage);
-            }
-            default -> throw new ApiException(LanguageError.COURSE_ACTION_TYPE_NOT_FOUND,"Unknown action type: " + command.getActionType());
-        }
+        LanguageTask task = courseTaskService.createCourseActionTask(jwtUtil.getUserAuthInfo().getId(),command);
 
-        return ResponseEntity.status(201).body(taskMapper.toChooseWordWithImageInfoDTO(task)/*taskMapper.toChooseWordWithImageTaskInfoDTO(task,wordRepository)*/);
+        return ResponseEntity.status(201).body(taskMapper.toChooseWordWithImageInfoDTO(task));
     }
 }
