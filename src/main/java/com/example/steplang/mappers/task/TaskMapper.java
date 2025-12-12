@@ -1,7 +1,8 @@
 package com.example.steplang.mappers.task;
 
+import com.example.steplang.dtos.course.ChooseWordWithImageDataDTO;
+import com.example.steplang.dtos.course.ChooseWordWithImageInfoDTO;
 import com.example.steplang.dtos.task.*;
-import com.example.steplang.entities.language.Word;
 import com.example.steplang.model.task.LanguageTask;
 import com.example.steplang.model.task.TaskDataBase;
 import com.example.steplang.model.task.arrangewords.ArrangeWordsData;
@@ -9,8 +10,6 @@ import com.example.steplang.model.task.course.ChooseWordWithImageData;
 import com.example.steplang.model.task.wordrepetition.WordRepetitionAnswer;
 import com.example.steplang.model.task.wordrepetition.WordRepetitionData;
 import com.example.steplang.model.task.wordrepetition.WordRepetitionItem;
-import com.example.steplang.repositories.UserRepository;
-import com.example.steplang.repositories.language.WordRepository;
 import org.mapstruct.*;
 
 import java.util.List;
@@ -24,12 +23,12 @@ public interface TaskMapper {
     @SubclassMapping(source = ArrangeWordsData.class, target = ArrangeWordsDataDTO.class)
     @SubclassMapping(source = ChooseWordWithImageData.class, target = ChooseWordWithImageDataDTO.class)
     //Add more subclassmapping as we need more different data subclasses
-    TaskDataBaseDTO mapTaskData(TaskDataBase taskData, @Context WordRepository wordRepository);
+    TaskDataBaseDTO mapTaskData(TaskDataBase taskData);
     @Mapping(target = "taskData", source="taskData")
-    WordRepetitionTaskInfoDTO toWordRepetitionTaskInfoDTO(LanguageTask languageTask, @Context WordRepository repo);
+    WordRepetitionTaskInfoDTO toWordRepetitionTaskInfoDTO(LanguageTask languageTask);
 
     @Mapping(target = "taskData", source="taskData")
-    ArrangeWordsTaskInfoDTO toArrangeWordsTaskInfoDTO(LanguageTask languageTask, @Context WordRepository repo);
+    ArrangeWordsTaskInfoDTO toArrangeWordsTaskInfoDTO(LanguageTask languageTask);
 
     @Mapping(target ="itemList", source = "itemList")
     WordRepetitionDataDTO toWordRepetitionDataDTO(WordRepetitionData wordRepetitionData);
@@ -48,36 +47,8 @@ public interface TaskMapper {
     }
 
 
-    // ---------- ChooseWordWithImageWordTask Mapping -----------
-
-    @Mapping(target = "chosenWord", source = "actionData.chosenWordId",
-            qualifiedByName = "wordIdToWordDTO")
-    @Mapping(target = "extraWords", source = "actionData.extraWordsId",
-            qualifiedByName = "wordIdsToWordDTOList")
-    ChooseWordWithImageDataDTO toChooseWordWithImageDataDTO(
-            ChooseWordWithImageData data,
-            @Context WordRepository wordRepository);
-
-    @Named("wordIdToWordDTO")
-    default ChooseWordWithImageWordDTO mapWordId(Long id, @Context WordRepository wordRepository) {
-        return wordRepository.findById(id)
-                .map(word -> new ChooseWordWithImageWordDTO(word.getId(), word.getBaseForm()))
-                .orElse(null);
-    }
-
-    @Named("wordIdsToWordDTOList")
-    default List<ChooseWordWithImageWordDTO> mapWordIds(List<Long> ids, @Context WordRepository wordRepository) {
-        if (ids == null)
-            return List.of();
-
-        return ids.stream()
-                .map(id -> wordRepository.findById(id)
-                        .map(w -> new ChooseWordWithImageWordDTO(w.getId(), w.getBaseForm()))
-                        .orElse(null))
-                .filter(Objects::nonNull)
-                .toList();
-    }
-
     @Mapping(target = "taskData", source="taskData")
-    ChooseWordWithImageTaskInfoDTO toChooseWordWithImageTaskInfoDTO(LanguageTask languageTask, @Context WordRepository repo);
+    ChooseWordWithImageInfoDTO toChooseWordWithImageInfoDTO(LanguageTask languageTask);
+    @Mapping(target ="wordsList", source = "wordsList")
+    ChooseWordWithImageDataDTO toChooseWordWithImageDataDTO(ChooseWordWithImageData chooseWordWithImageData);
 }

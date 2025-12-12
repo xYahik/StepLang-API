@@ -49,6 +49,7 @@ public class Word {
     @OneToMany(mappedBy = "word", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<WordForm> forms = new ArrayList<>();
 
+    private String imageUrl;
     public Word(Language lang,String baseForm,  WordType wordType){
         this.language = lang;
         this.baseForm = baseForm;

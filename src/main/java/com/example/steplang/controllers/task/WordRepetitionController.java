@@ -24,12 +24,11 @@ public class WordRepetitionController {
     private final TaskMapper taskMapper;
     private final JwtUtil jwtUtil;
     private final WordRepetitionTaskService wordRepetitionTaskService;
-    private final WordRepository wordRepository;
     @PostMapping("/create")
     public ResponseEntity<?> createWordRepetitionTask(@Valid @RequestBody CreateWordRepetitionTaskCommand command){
         LanguageTask languageTask = languageTaskService.createTask(jwtUtil.getUserAuthInfo().getId(),command.getLanguageId(),command.getTargetLanguageId(),LanguageTaskType.WORD_REPETITION);
 
-        return ResponseEntity.ok(taskMapper.toWordRepetitionTaskInfoDTO(languageTask,wordRepository));
+        return ResponseEntity.ok(taskMapper.toWordRepetitionTaskInfoDTO(languageTask));
     }
 
     @PostMapping("/answer")

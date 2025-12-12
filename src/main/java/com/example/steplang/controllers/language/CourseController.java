@@ -11,9 +11,11 @@ import com.example.steplang.mappers.task.TaskMapper;
 import com.example.steplang.model.course.CourseActionBase;
 import com.example.steplang.model.course.CourseActionChooseWordWithImage;
 import com.example.steplang.model.task.LanguageTask;
+import com.example.steplang.model.task.course.ChooseWordWithImageData;
 import com.example.steplang.repositories.language.WordRepository;
 import com.example.steplang.services.language.CourseService;
 import com.example.steplang.services.task.CourseTaskService;
+import com.example.steplang.utils.JwtUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +32,7 @@ public class CourseController {
     private final CourseMapper courseMapper;
     private final TaskMapper taskMapper;
     private final CourseTaskService courseTaskService;
-    private final WordRepository wordRepository;
+    private final JwtUtil jwtUtil;
     @PostMapping("/add")
     public ResponseEntity<?> addNewCourse(@Valid @RequestBody AddCourseCommand command){
         Course course = courseService.addNewCourse(command);
@@ -109,13 +111,14 @@ public class CourseController {
         LanguageTask task;
         switch (command.getActionType()) {
             case CHOOSE_WORD_WITH_IMAGE -> {
-                CourseActionChooseWordWithImage courseActionChooseWordWIthImage = new CourseActionChooseWordWithImage();
-                courseActionChooseWordWIthImage.setChosenWordId(((AddCourseActionChooseWordWithImageCommand)command).getChosenWordId());
-                courseActionChooseWordWIthImage.setExtraWordsId(((AddCourseActionChooseWordWithImageCommand)command).getExtraWordsId());
-                task = courseTaskService.createChooseWordWithImageTask(courseService.getCourse(courseId),courseActionChooseWordWIthImage);
+                CourseActionChooseWordWithImage courseActionChooseWordWithImage = new CourseActionChooseWordWithImage();
+                courseActionChooseWordWithImage.setChosenWordId(((AddCourseActionChooseWordWithImageCommand)command).getChosenWordId());
+                courseActionChooseWordWithImage.setExtraWordsId(((AddCourseActionChooseWordWithImageCommand)command).getExtraWordsId());
+                task = courseTaskService.createChooseWordWithImageTask(jwtUtil.getUserAuthInfo().getId(),courseService.getCourse(courseId),courseActionChooseWordWithImage);
             }
             default -> throw new ApiException(LanguageError.COURSE_ACTION_TYPE_NOT_FOUND,"Unknown action type: " + command.getActionType());
         }
-        return ResponseEntity.status(201).body(taskMapper.toChooseWordWithImageTaskInfoDTO(task,wordRepository));
+
+        return ResponseEntity.status(201).body(taskMapper.toChooseWordWithImageInfoDTO(task)/*taskMapper.toChooseWordWithImageTaskInfoDTO(task,wordRepository)*/);
     }
 }

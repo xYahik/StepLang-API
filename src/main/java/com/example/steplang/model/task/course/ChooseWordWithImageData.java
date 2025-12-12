@@ -8,5 +8,7 @@ import java.util.List;
 
 @Data
 public class ChooseWordWithImageData extends TaskDataBase {
-    private CourseActionChooseWordWithImage actionData;
+    private Integer chosenWordIndex;
+    private String wordImageUrl;
+    private List<ChooseWordWithImageItem> wordsList;
 }
