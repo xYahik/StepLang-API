@@ -1,4 +1,4 @@
-package com.example.steplang.commands.language;
+package com.example.steplang.commands.course;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

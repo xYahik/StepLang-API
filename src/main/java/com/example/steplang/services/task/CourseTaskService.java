@@ -1,14 +1,17 @@
 package com.example.steplang.services.task;
 
-import com.example.steplang.commands.language.CreateCourseActionTaskCommand;
+import com.example.steplang.commands.course.AnswerCourseChooseWordWithImageTaskCommand;
+import com.example.steplang.commands.course.UserAnswerToChooseWordWithImageTaskCommand;
+import com.example.steplang.commands.course.CreateCourseActionTaskCommand;
+import com.example.steplang.dtos.course.ChooseWordWithImageAnswerResponseDTO;
 import com.example.steplang.entities.language.Course;
 import com.example.steplang.entities.language.Word;
 import com.example.steplang.errors.LanguageError;
+import com.example.steplang.errors.TaskError;
 import com.example.steplang.exceptions.ApiException;
 import com.example.steplang.model.course.CourseActionBase;
 import com.example.steplang.model.course.CourseActionChooseWordWithImage;
 import com.example.steplang.model.task.LanguageTask;
-import com.example.steplang.model.task.arrangewords.ArrangeWordsData;
 import com.example.steplang.model.task.course.ChooseWordWithImageData;
 import com.example.steplang.model.task.course.ChooseWordWithImageItem;
 import com.example.steplang.repositories.language.WordRepository;
@@ -19,10 +22,7 @@ import com.example.steplang.utils.enums.LanguageTaskType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -75,5 +75,28 @@ public class CourseTaskService{
         LanguageTask languageTask = new LanguageTask(taskId,userId,course.getLearningLanguage().getId(),LanguageTaskType.CHOOSE_WORD_WITH_IMAGE,chooseWordWithImageData);
         languageTaskRepo.save(languageTask);
         return languageTask;
+    }
+
+    public ChooseWordWithImageAnswerResponseDTO answerChooseWordWithImageTask(Long userId, AnswerCourseChooseWordWithImageTaskCommand command){
+        LanguageTask languageTask = languageTaskRepo.findById(command.getTaskId()).orElse(null);
+        if(languageTask == null)
+            throw new ApiException(TaskError.TASK_NOT_EXIST,String.format("Couldn't find task with id = '%s'",command.getTaskId()));
+        if(!Objects.equals(languageTask.getUserId(), userId))
+            throw new ApiException(TaskError.TASK_INCORRECT_USER,"Current user is incorrect for this task");
+
+        ChooseWordWithImageData chooseWordWithImageData = (ChooseWordWithImageData)languageTask.getTaskData();
+
+        boolean isCorrectAnswer = false;
+        if(Objects.equals(chooseWordWithImageData.getChosenWordIndex(), command.getAnswerIndex())){
+            //CorrectAnswer
+            isCorrectAnswer = true;
+        }else{
+            //IncorrectAnswer
+        }
+
+        ChooseWordWithImageAnswerResponseDTO responseDTO = new ChooseWordWithImageAnswerResponseDTO();
+        responseDTO.setIsCorrect(isCorrectAnswer);
+        responseDTO.setCorrectIndex(chooseWordWithImageData.getChosenWordIndex());
+        return responseDTO;
     }
 }

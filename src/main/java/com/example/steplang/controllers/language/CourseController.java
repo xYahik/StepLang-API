@@ -1,5 +1,8 @@
 package com.example.steplang.controllers.language;
 
+import com.example.steplang.commands.course.AnswerCourseActionTaskCommand;
+import com.example.steplang.commands.course.AnswerCourseChooseWordWithImageTaskCommand;
+import com.example.steplang.commands.course.CreateCourseActionTaskCommand;
 import com.example.steplang.commands.language.*;
 import com.example.steplang.entities.language.Course;
 import com.example.steplang.entities.language.CourseModule;
@@ -9,13 +12,12 @@ import com.example.steplang.exceptions.ApiException;
 import com.example.steplang.mappers.CourseMapper;
 import com.example.steplang.mappers.task.TaskMapper;
 import com.example.steplang.model.course.CourseActionBase;
-import com.example.steplang.model.course.CourseActionChooseWordWithImage;
 import com.example.steplang.model.task.LanguageTask;
-import com.example.steplang.model.task.course.ChooseWordWithImageData;
-import com.example.steplang.repositories.language.WordRepository;
 import com.example.steplang.services.language.CourseService;
 import com.example.steplang.services.task.CourseTaskService;
+import com.example.steplang.utils.AnswerActionTaskCommandResolver;
 import com.example.steplang.utils.JwtUtil;
+import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +35,7 @@ public class CourseController {
     private final TaskMapper taskMapper;
     private final CourseTaskService courseTaskService;
     private final JwtUtil jwtUtil;
+    private final AnswerActionTaskCommandResolver answerActionTaskCommandResolver;
     @PostMapping("/add")
     public ResponseEntity<?> addNewCourse(@Valid @RequestBody AddCourseCommand command){
         Course course = courseService.addNewCourse(command);
@@ -112,5 +115,19 @@ public class CourseController {
         LanguageTask task = courseTaskService.createCourseActionTask(jwtUtil.getUserAuthInfo().getId(),command);
 
         return ResponseEntity.status(201).body(taskMapper.toChooseWordWithImageInfoDTO(task));
+    }
+
+    @PostMapping("{courseId}/{moduleId}/{subModuleId}/action/task/answer")
+    public ResponseEntity<?> answerActionTask(@PathVariable Long courseId, @PathVariable Integer moduleId, @PathVariable Integer subModuleId, @RequestBody JsonNode rawJson){
+        AnswerCourseActionTaskCommand command = answerActionTaskCommandResolver.resolve(rawJson);
+        switch(command.getTaskType()){
+            case CHOOSE_WORD_WITH_IMAGE -> {
+                return ResponseEntity.status(200).body(courseTaskService.answerChooseWordWithImageTask(jwtUtil.getUserAuthInfo().getId(),(AnswerCourseChooseWordWithImageTaskCommand)command));
+            }
+            case null, default -> {
+                return ResponseEntity.badRequest().build();
+            }
+        }
+
     }
 }
