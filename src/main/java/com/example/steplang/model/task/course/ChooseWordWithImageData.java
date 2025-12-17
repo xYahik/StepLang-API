@@ -11,4 +11,5 @@ public class ChooseWordWithImageData extends TaskDataBase {
     private Integer chosenWordIndex;
     private String wordImageUrl;
     private List<ChooseWordWithImageItem> wordsList;
+    private Boolean isAnswered;
 }

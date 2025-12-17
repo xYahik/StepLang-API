@@ -21,6 +21,7 @@ import com.example.steplang.utils.enums.CourseActionType;
 import com.example.steplang.utils.enums.LanguageTaskType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -46,6 +47,7 @@ public class CourseTaskService{
 
         return languageTask;
     }
+    @Transactional
     private LanguageTask createChooseWordWithImageTask(Long userId, Course course, CourseActionChooseWordWithImage actionData) {
         String taskId = UUID.randomUUID().toString();
 
@@ -72,11 +74,14 @@ public class CourseTaskService{
         chooseWordWithImageData.setChosenWordIndex(chooseWordWithImageData.getWordsList().indexOf(chosenWordItem));
         chooseWordWithImageData.setWordImageUrl(chosenWord.getImageUrl());
 
+        chooseWordWithImageData.setIsAnswered(false);
+
         LanguageTask languageTask = new LanguageTask(taskId,userId,course.getLearningLanguage().getId(),LanguageTaskType.CHOOSE_WORD_WITH_IMAGE,chooseWordWithImageData);
         languageTaskRepo.save(languageTask);
         return languageTask;
     }
 
+    @Transactional
     public ChooseWordWithImageAnswerResponseDTO answerChooseWordWithImageTask(Long userId, AnswerCourseChooseWordWithImageTaskCommand command){
         LanguageTask languageTask = languageTaskRepo.findById(command.getTaskId()).orElse(null);
         if(languageTask == null)
@@ -86,6 +91,12 @@ public class CourseTaskService{
 
         ChooseWordWithImageData chooseWordWithImageData = (ChooseWordWithImageData)languageTask.getTaskData();
 
+        if(chooseWordWithImageData.getIsAnswered()){
+            throw new ApiException(TaskError.TASK_ALREADY_ANSWERED, "ActionTask already answered");
+        }else {
+            chooseWordWithImageData.setIsAnswered(true);
+        }
+
         boolean isCorrectAnswer = false;
         if(Objects.equals(chooseWordWithImageData.getChosenWordIndex(), command.getAnswerIndex())){
             //CorrectAnswer
@@ -93,6 +104,8 @@ public class CourseTaskService{
         }else{
             //IncorrectAnswer
         }
+
+        languageTaskRepo.save(languageTask);
 
         ChooseWordWithImageAnswerResponseDTO responseDTO = new ChooseWordWithImageAnswerResponseDTO();
         responseDTO.setIsCorrect(isCorrectAnswer);
